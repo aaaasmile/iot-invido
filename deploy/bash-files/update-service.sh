@@ -1,5 +1,5 @@
 #!/bin/bash
-read -p "Update the live-omxctrl (live-omxctrl on pi4) y/n ? " -n 1 -r
+read -p "Update the iot-invido (iot-invido on invido.it) y/n ? " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Nn]$ ]]
 then
@@ -8,7 +8,7 @@ then
 
 fi
 echo "Stop the service"
-sudo systemctl stop live-omxctrl
+sudo systemctl stop iot-invido
 
 ZIPDIR="./zips"
 CURRDIR="./current"
@@ -42,10 +42,10 @@ destpath=$CURRDIR'/'
 echo "The source is $zippath and destination is $destpath"
 unzip $zippath -d $destpath
 
-chmod +x $destpath'/'live-omxctrl.bin
+chmod +x $destpath'/'iot-invido.bin
 
 echo "Start the service"
-sudo systemctl start live-omxctrl
+sudo systemctl start iot-invido
 
 
 echo "That's all folks!"
