@@ -8,12 +8,15 @@ export default {
   },
   computed: {
     ...Vuex.mapState({
-
+      LastMsg: state => {
+        return state.gen.lastmsgText
+      },
     })
   },
   methods: {
     fetchData() {
       console.log('fetchData ')
+      let req = { from: 'lastday' }
       API.FetchData(this, req)
     }
   },
@@ -21,17 +24,27 @@ export default {
   <v-card color="grey lighten-4" flat tile>
     <v-toolbar flat dense>
       <v-toolbar-title class="subheading grey--text"
-        >Iot Invido</v-toolbar-title
+        >Dashboard Sensor</v-toolbar-title
       >
       <v-tooltip bottom>
-          <template v-slot:activator="{ on }">
-            <v-btn icon @click="syncRepo" :loading="fetchData" v-on="on">
-              <v-icon>mdi-sync</v-icon>
-            </v-btn>
-          </template>
-          <span>Update data</span>
-        </v-tooltip>
+        <template v-slot:activator="{ on }">
+          <v-btn icon @click="fetchData" :loading="loading" v-on="on">
+            <v-icon>mdi-sync</v-icon>
+          </v-btn>
+        </template>
+        <span>Update data</span>
+      </v-tooltip>
       <v-spacer></v-spacer>
     </v-toolbar>
-  </v-card>`
+    <v-container>
+      <v-divider></v-divider>
+      <v-row justify="space-around">
+        <v-card>
+          <v-card-text>Last message</v-card-text>
+          <div class="mx-4">{{ LastMsg }}</div>
+        </v-card>
+      </v-row>
+    </v-container>
+  </v-card>
+`
 }
