@@ -6,7 +6,7 @@ go build -o iot-invido.bin
 cd ./deploy
 
 echo "build the zip package"
-./deploy.bin -target invido -outdir ~/app/go/iot-invido/zips/
+./deploy.bin -target iotinvido -outdir ~/app/go/iot-invido/zips/
 cd ~/app/iot-invido/
 
 echo "update the service"
