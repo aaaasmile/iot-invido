@@ -7,7 +7,7 @@ cd ./deploy
 
 echo "build the zip package"
 ./deploy.bin -target iotinvido -outdir ~/app/go/iot-invido/zips/
-cd ~/app/iot-invido/
+cd ~/app/go/iot-invido/
 
 echo "update the service"
 ./update-service.sh
