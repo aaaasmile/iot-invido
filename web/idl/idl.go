@@ -4,7 +4,7 @@ import "time"
 
 var (
 	Appname = "iot-invido"
-	Buildnr = "00.01.01.20201126-00"
+	Buildnr = "00.01.02.20201126-00"
 )
 
 type SensorState struct {
