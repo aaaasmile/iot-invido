@@ -44,6 +44,19 @@ sudo ln -s /etc/nginx/sites-available/iot.invido.it  /etc/nginx/sites-enabled/io
 Ricevo dei warning sulla porta 443, che non dovrebbero causare problemi. Ora il restart:
 sudo systemctl restart nginx
 
+Nella configurazione di nginx bisogna far passare il websocket. Basta aggiungere
+nella sezione location le seguenti due righe:
+proxy_set_header Upgrade $http_upgrade;
+proxy_set_header Connection "upgrade";
+Vedi il back dei file su D:\Hetzner\Backups\20201126\nginx
+
+== Problemi con Vue,js
+Di solito uso come RootURLPattern nella configurazione qualcosa come /iot/
+Il problema è che nel caricare vue dietro al reverse proxy non posso usare direttamente
+il link https://iot.invido.it/#/
+Quindi uso sul target RootURLPattern= "/" mentre nella configurazione nginx
+proxy_pass http://127.0.0.1:5589/;
+
 
 == Service Config
 Questo il conetnuto del file che compare con:
