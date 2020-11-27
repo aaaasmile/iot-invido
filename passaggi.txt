@@ -5,17 +5,44 @@ Per esempio i dati letti dal  sensore BME680 sul ESP8266. Vedi il progetto GasTe
 Per stoppare il sevice si usa:
 sudo systemctl stop iot-invido
 
-== Deployment su arm direttamente
-In un colpo: ./publish-iot.sh
-
+== Deployment su ubuntu direttamente
+git pull --all
+./publish-iot.sh
 
 == Deployment dettagli e preparazione
-Abilitare il service:
+Certbot va fatto alla fine, altrimenti ti cambia il file default e si ha un conflitto di siti già definiti.
+Configurazione del dominio iot.invido.it sul dns di aruba.
+
+Creare la struttura dell'applicazione
+~/app/go/iot-invido/current
+~/app/go/iot-invido/old
+~/app/go/iot-invido/zips
+In ~/build/ invece si fa il clone della repository iot-invido
+Qui si compila deploy.bin e si copia update-service.sh in ~/app/go/iot-invido/
+Poi si lancia ./publish-iot.sh
+
+Ora bisogna abilitare il service:
 sudo systemctl enable iot-invido.service
 Ora si fa partire il service (resistente al reboot):
 sudo systemctl start iot-invido
 Per vedere i logs si usa:
 sudo journalctl -f -u iot-invido
+
+Per ultimo si setta nginx
+cd /etc/nginx/sites-available
+sudo cp live.invido.it  iot.invido.it
+poi cambio i link http e il nome del server usando i dati del nuovo service iot-invido con:
+sudo nano iot.invido.it
+Una verifica della configuraione con 
+sudo nginx -t
+Se ci sono dei warning, cancellare il file e ripetere di nuovo fino a quando è tutto ok.
+Per esempio ho avuto il problema che, facendo l'update di certbot prima di settare nginx,
+certbot mi ha messo iot.invido.it nel file die default, in quanto non era configurato.
+
+Ora manca l'enable:
+sudo ln -s /etc/nginx/sites-available/iot.invido.it  /etc/nginx/sites-enabled/iot.invido.it
+Ricevo dei warning sulla porta 443, che non dovrebbero causare problemi. Ora il restart:
+sudo systemctl restart nginx
 
 
 == Service Config
