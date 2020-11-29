@@ -10,9 +10,17 @@
             <v-icon>mdi-sync</v-icon>
           </v-btn>
         </template>
-        <span>Update data</span>
+        <span>Check data</span>
       </v-tooltip>
       <v-spacer></v-spacer>
+      <v-tooltip bottom>
+        <template v-slot:activator="{ on }">
+          <v-btn icon @click="insertData" :loading="loading" v-on="on">
+            <v-icon>add-task</v-icon>
+          </v-btn>
+        </template>
+        <span>Insert some data</span>
+      </v-tooltip>
     </v-toolbar>
     <!-- <v-container>
       <v-divider></v-divider>

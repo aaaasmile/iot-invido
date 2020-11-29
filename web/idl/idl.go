@@ -20,3 +20,8 @@ type SensorState struct {
 	Co2       float32   `json:"co2"`
 	Voc       float32   `json:"voc"`
 }
+
+type Influx struct {
+	DbName string
+	DbHost string
+}

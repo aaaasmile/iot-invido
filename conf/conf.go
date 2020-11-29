@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/BurntSushi/toml"
+	"github.com/aaaasmile/iot-invido/web/idl"
 )
 
 type Config struct {
@@ -12,12 +13,7 @@ type Config struct {
 	RootURLPattern string
 	DebugVerbose   bool
 	VueLibName     string
-	Influx         *Influx
-}
-
-type Influx struct {
-	DbName string
-	DbHost string
+	Influx         *idl.Influx
 }
 
 var Current = &Config{}

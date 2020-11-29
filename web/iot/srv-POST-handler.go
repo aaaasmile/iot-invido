@@ -4,6 +4,9 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+
+	"github.com/aaaasmile/iot-invido/conf"
+	"github.com/aaaasmile/iot-invido/web/iot/datahandler"
 )
 
 func handlePost(w http.ResponseWriter, req *http.Request) error {
@@ -13,6 +16,11 @@ func handlePost(w http.ResponseWriter, req *http.Request) error {
 	switch lastPath {
 	case "PubData":
 		err = handlePubData(w, req)
+	case "InsertTestData":
+		hd := datahandler.HandleData{
+			Influx: conf.Current.Influx,
+		}
+		err = hd.HandleTestInsertLine(w, req)
 	default:
 		return fmt.Errorf("%s method is not supported", lastPath)
 	}

@@ -3,8 +3,10 @@ package util
 import (
 	"bufio"
 	"encoding/base64"
+	"encoding/json"
 	"fmt"
 	"log"
+	"net/http"
 	"os"
 	"os/user"
 	"path/filepath"
@@ -55,4 +57,14 @@ func GetFullPath(relPath string) string {
 	}
 	r := filepath.Join(rootPath, relPath)
 	return r
+}
+
+func WriteJsonResp(w http.ResponseWriter, resp interface{}) error {
+	blobresp, err := json.Marshal(resp)
+	if err != nil {
+		return err
+	}
+	w.Write(blobresp)
+
+	return nil
 }
