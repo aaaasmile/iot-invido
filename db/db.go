@@ -38,14 +38,18 @@ func (conn *InfluxDbConn) InsertSensorData(name string, useDeltaTime bool, prevT
 	if err != nil {
 		return err
 	}
-	fmt.Println("** Batch point is ", bp)
 
-	tags := map[string]string{"AirQuality": senSt.GetAirQualityTag()}
+	tags := map[string]string{
+		"air-quality-class": senSt.GetAirQualityTag(),
+		"place":             senSt.Place,
+		"sensor-id":         senSt.SensorID,
+	}
 	fields := senSt.GetInterfaceMap()
 	ts := time.Now()
 	if useDeltaTime && senSt.TimeStamp.After(prevTimestamp) {
 		ts = prevTimestamp.Add(senSt.TimeStamp.Sub(prevTimestamp))
 	}
+	senSt.TimeStamp = ts
 	pt, err := client.NewPoint(name, tags, fields, ts)
 	if err != nil {
 		return err
@@ -55,6 +59,7 @@ func (conn *InfluxDbConn) InsertSensorData(name string, useDeltaTime bool, prevT
 	if err := c.Write(bp); err != nil {
 		return err
 	}
+	fmt.Println("** Batch point inserted ", bp)
 
 	return nil
 }

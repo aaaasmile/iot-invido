@@ -43,7 +43,7 @@ export default {
       <v-tooltip bottom>
         <template v-slot:activator="{ on }">
           <v-btn icon @click="insertData" :loading="loading" v-on="on">
-            <v-icon>add-task</v-icon>
+            <v-icon>mdi-chart-arc</v-icon>
           </v-btn>
         </template>
         <span>Insert some data</span>
@@ -58,6 +58,5 @@ export default {
         </v-card>
       </v-row>
     </v-container> -->
-  </v-card>
-`
+  </v-card>`
 }
