@@ -11,9 +11,15 @@ export default {
         humy: '',
         co2: '',
         voc: '',
+        sensorid: '',
+        place: '',
     },
     mutations: {
-        sensorstate(state, data) {
+        sensorstate(state, dataArr) {
+            if (dataArr.length <= 0){
+                return
+            }
+            let data = dataArr[dataArr.length - 1]
             state.timeStamp = data.timeStamp
             state.tempraw = data.tempraw
             state.press = data.press
@@ -25,7 +31,8 @@ export default {
             state.humy = data.humy
             state.co2 = data.co2
             state.voc = data.voc
-
+            state.sensorid = data.sensorid
+            state.place = data.place
         }
     }
 }

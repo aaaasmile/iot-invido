@@ -11,6 +11,12 @@ export default {
       LastMsg: state => {
         return state.gen.lastmsgText
       },
+      SensorName: state => {
+        return state.sen.sensorid
+      },
+      SensorPlace: state => {
+        return state.sen.place
+      },
     })
   },
   methods: {
@@ -49,14 +55,20 @@ export default {
         <span>Insert some data</span>
       </v-tooltip>
     </v-toolbar>
-    <!-- <v-container>
-      <v-divider></v-divider>
-      <v-row justify="space-around">
-        <v-card>
-          <v-card-text>Last message</v-card-text>
-          <div class="mx-4">{{ LastMsg }}</div>
-        </v-card>
-      </v-row>
-    </v-container> -->
-  </v-card>`
+   <v-container>
+    <v-row justify="space-around">
+      <v-card width="400">
+          <v-card-title class="grey--text mt-8">
+            <p class="ml-3">
+              Sensor: {{ SensorName }}
+            </p>
+            <p class="ml-3">
+              Place: {{ SensorPlace }}
+            </p>
+          </v-card-title>
+      </v-card>
+    </v-row>
+   </v-container>
+  </v-card>
+`
 }
