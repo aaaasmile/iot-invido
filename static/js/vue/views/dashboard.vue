@@ -40,12 +40,13 @@
             >
               <div>
                 <div class="font-weight-normal">
-                  IAQ <strong>{{ measure.iaq }}</strong> @{{ measure.timeStamp }}
+                  IAQ <strong>{{ measure.iaq }}</strong>, acc {{ measure.iaqacc }}  @{{ measure.timeStamp }}
                 </div>
                 <div>Temperature: {{ measure.temp }}</div>
                 <div>Humidiy: {{ measure.humy }}</div>
                 <div>Pressure: {{ measure.press }}</div>
                 <div>CO2: {{ measure.co2 }}</div>
+                <div><strong>{{ measure.iaqclass }}</strong></div>
               </div>
             </v-timeline-item>
           </v-timeline>

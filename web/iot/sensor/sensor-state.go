@@ -1,6 +1,9 @@
 package sensor
 
-import "time"
+import (
+	"math/rand"
+	"time"
+)
 
 type SensorState struct {
 	SensorID  string    `json:"sensorid"`
@@ -58,12 +61,12 @@ func (ss *SensorState) GetInterfaceMap() map[string]interface{} {
 }
 
 func (ss *SensorState) SetRandomData() {
-	ss.Temp = 25.7
-	ss.Press = 1024
-	ss.Humidity = 43.6
+	ss.Temp = 18.2 + rand.Float32()*10.0
+	ss.Press = 1024 + rand.Float32()*10.0
+	ss.Humidity = 43.6 + rand.Float32()*30.0
 	ss.Gaso = 34009.8
-	ss.Iaq = 71.6
+	ss.Iaq = 10 + rand.Float32()*300.0
 	ss.Iaqacc = 3
-	ss.Co2 = 500
-	ss.Voc = 1.34
+	ss.Co2 = 500 + rand.Float32()*400.0
+	ss.Voc = 1.34 + +rand.Float32()*13.0
 }
