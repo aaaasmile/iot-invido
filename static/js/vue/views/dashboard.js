@@ -12,10 +12,13 @@ export default {
         return state.gen.lastmsgText
       },
       SensorName: state => {
-        return state.sen.sensorid
+        return state.sen.last.sensorid
       },
       SensorPlace: state => {
-        return state.sen.place
+        return state.sen.last.place
+      },
+      Measures: state => {
+        return state.sen.measures
       },
     })
   },
@@ -55,20 +58,35 @@ export default {
         <span>Insert some data</span>
       </v-tooltip>
     </v-toolbar>
-   <v-container>
-    <v-row justify="space-around">
-      <v-card width="400">
+    <v-container>
+      <v-row justify="space-around">
+        <v-card width="400">
           <v-card-title class="grey--text mt-8">
-            <p class="ml-3">
-              Sensor: {{ SensorName }}
-            </p>
-            <p class="ml-3">
-              Place: {{ SensorPlace }}
-            </p>
+            <p class="ml-3">Sensor: {{ SensorName }}</p>
+            <p class="ml-3">Place: {{ SensorPlace }}</p>
           </v-card-title>
-      </v-card>
-    </v-row>
-   </v-container>
-  </v-card>
-`
+          <div class="font-weight-bold ml-8 mb-2">Timeline</div>
+
+          <v-timeline align-top dense>
+            <v-timeline-item
+              v-for="measure in Measures"
+              :key="measure.time"
+              :color="measure.color"
+              small
+            >
+              <div>
+                <div class="font-weight-normal">
+                  <strong>{{ measure.iaq }}</strong> @{{ measure.timeStamp }}
+                </div>
+                <div>Temperature: {{ measure.temp }}</div>
+                <div>Humidiy: {{ measure.humy }}</div>
+                <div>Pressure: {{ measure.press }}</div>
+                <div>CO2: {{ measure.co2 }}</div>
+              </div>
+            </v-timeline-item>
+          </v-timeline>
+        </v-card>
+      </v-row>
+    </v-container>
+  </v-card>`
 }

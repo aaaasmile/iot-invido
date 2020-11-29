@@ -1,38 +1,44 @@
 export default {
     state: {
-        timeStamp: '',
-        tempraw: '',
-        press: '',
-        humiraw: '',
-        gaso: '',
-        iaq: '',
-        iaqacc: '',
-        temp: '',
-        humy: '',
-        co2: '',
-        voc: '',
-        sensorid: '',
-        place: '',
+        last: {
+            timeStamp: '',
+            tempraw: '',
+            press: '',
+            humiraw: '',
+            gaso: '',
+            iaq: '',
+            iaqacc: '',
+            temp: '',
+            humy: '',
+            co2: '',
+            voc: '',
+            sensorid: '',
+            place: '',
+            color: '',
+        },
+        measures: [],
     },
     mutations: {
         sensorstate(state, dataArr) {
-            if (dataArr.length <= 0){
+            state.measures = dataArr
+            if (dataArr.length <= 0) {
                 return
             }
             let data = dataArr[dataArr.length - 1]
-            state.timeStamp = data.timeStamp
-            state.tempraw = data.tempraw
-            state.press = data.press
-            state.humiraw = data.humiraw
-            state.gaso = data.gaso
-            state.iaq = data.iaq
-            state.iaqacc = data.iaqacc
-            state.temp = data.temp
-            state.humy = data.humy
-            state.co2 = data.co2
-            state.voc = data.voc
-            state.sensorid = data.sensorid
-            state.place = data.place
+            let state1 = state.last
+            state1.timeStamp = data.timeStamp
+            state1.tempraw = data.tempraw
+            state1.press = data.press
+            state1.humiraw = data.humiraw
+            state1.gaso = data.gaso
+            state1.iaq = data.iaq
+            state1.iaqacc = data.iaqacc
+            state1.temp = data.temp
+            state1.humy = data.humy
+            state1.co2 = data.co2
+            state1.voc = data.voc
+            state1.sensorid = data.sensorid
+            state1.place = data.place
         }
     }
 }
