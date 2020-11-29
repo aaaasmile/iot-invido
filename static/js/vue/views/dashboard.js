@@ -36,7 +36,7 @@ export default {
       </v-tooltip>
       <v-spacer></v-spacer>
     </v-toolbar>
-    <v-container>
+    <!-- <v-container>
       <v-divider></v-divider>
       <v-row justify="space-around">
         <v-card>
@@ -44,7 +44,6 @@ export default {
           <div class="mx-4">{{ LastMsg }}</div>
         </v-card>
       </v-row>
-    </v-container>
-  </v-card>
-`
+    </v-container> -->
+  </v-card>`
 }

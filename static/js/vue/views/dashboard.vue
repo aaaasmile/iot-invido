@@ -14,7 +14,7 @@
       </v-tooltip>
       <v-spacer></v-spacer>
     </v-toolbar>
-    <v-container>
+    <!-- <v-container>
       <v-divider></v-divider>
       <v-row justify="space-around">
         <v-card>
@@ -22,6 +22,6 @@
           <div class="mx-4">{{ LastMsg }}</div>
         </v-card>
       </v-row>
-    </v-container>
+    </v-container> -->
   </v-card>
 </template>

@@ -106,3 +106,17 @@ StandardError=syslog
 ------------------------------------------- end file content
 
 go mod init github.com/aaaasmile/iot-invido
+
+== Database
+Data la natura del progetto un db ineteressante da installare è influxdb.
+Per windows ho installato la versione 1.8.1, per unbuntu c'è già la versione 2.0.2
+Per pi4 c'è la versione 1..8.1 che si scarica da https://portal.influxdata.com/downloads/
+Su windows, dove sviluppo uso la versione a linea di comando che ricorda nginx. Si trova su
+D:\influxdb\influxdb-1.8.3-1
+Lì c'è il daemon e la linea di comando.
+Per vedere quali config vanno cambiati, vedi il link per windows: https://devconnected.com/how-to-install-influxdb-on-windows-in-2019/
+La doc si trova su: https://docs.influxdata.com/influxdb/v1.8/introduction/install/
+Ho creato a linea di comando con influx.exe un database:
+create database iotair
+Dove voglio mettere dentro tutte le misure del mio sensore.
+
