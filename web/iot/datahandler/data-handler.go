@@ -2,10 +2,12 @@ package datahandler
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/aaaasmile/iot-invido/db"
 	"github.com/aaaasmile/iot-invido/util"
 	"github.com/aaaasmile/iot-invido/web/idl"
+	"github.com/aaaasmile/iot-invido/web/iot/sensor"
 )
 
 type HandleData struct {
@@ -14,15 +16,18 @@ type HandleData struct {
 
 func (hd *HandleData) HandleTestInsertLine(w http.ResponseWriter, req *http.Request) error {
 	conn := db.NewInfluxConn(hd.Influx.DbHost, hd.Influx.DbName)
-	sensState := idl.SensorState{}
-	if err := conn.InsertSensorData("SimBM680", false, &sensState); err != nil {
+	sensState := sensor.SensorState{SensorID: "Test", Place: "Home"}
+	sensState.SetRandomData()
+
+	prevTs := time.Now()
+	if err := conn.InsertSensorData("SimBM680", false, prevTs, &sensState); err != nil {
 		return err
 	}
 
-	list := []idl.SensorState{sensState}
+	list := []sensor.SensorState{sensState}
 	rspdata := struct {
-		Status   string            `json:"status"`
-		DataView []idl.SensorState `json:"dataview"`
+		Status   string               `json:"status"`
+		DataView []sensor.SensorState `json:"dataview"`
 	}{
 		Status:   "OK",
 		DataView: list,

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"time"
 
-	"github.com/aaaasmile/iot-invido/web/idl"
+	"github.com/aaaasmile/iot-invido/web/iot/sensor"
 	_ "github.com/influxdata/influxdb1-client" // this is important because of the bug in go mod
 	client "github.com/influxdata/influxdb1-client/v2"
 )
@@ -22,7 +22,7 @@ func NewInfluxConn(host, dbname string) *InfluxDbConn {
 	return &con
 }
 
-func (conn *InfluxDbConn) InsertSensorData(sendId string, useDeltaTime bool, sensState *idl.SensorState) error {
+func (conn *InfluxDbConn) InsertSensorData(name string, useDeltaTime bool, prevTimestamp time.Time, senSt *sensor.SensorState) error {
 	c, err := client.NewHTTPClient(client.HTTPConfig{
 		Addr: conn.dbHost,
 	})
@@ -31,7 +31,6 @@ func (conn *InfluxDbConn) InsertSensorData(sendId string, useDeltaTime bool, sen
 	}
 	defer c.Close()
 
-	// Create a new point batch
 	bp, err := client.NewBatchPoints(client.BatchPointsConfig{
 		Database:  conn.dbName,
 		Precision: "s",
@@ -41,25 +40,21 @@ func (conn *InfluxDbConn) InsertSensorData(sendId string, useDeltaTime bool, sen
 	}
 	fmt.Println("** Batch point is ", bp)
 
-	// // Create a point and add to batch
-	// tags := map[string]string{"productView": productMeasurement["ProductName"].(string)}
-	// fields := productMeasurement
-
-	pt, err := client.NewPoint("products", tags, fields, time.Now())
+	tags := map[string]string{"AirQuality": senSt.GetAirQualityTag()}
+	fields := senSt.GetInterfaceMap()
+	ts := time.Now()
+	if useDeltaTime && senSt.TimeStamp.After(prevTimestamp) {
+		ts = prevTimestamp.Add(senSt.TimeStamp.Sub(prevTimestamp))
+	}
+	pt, err := client.NewPoint(name, tags, fields, ts)
 	if err != nil {
 		return err
 	}
 	bp.AddPoint(pt)
 
-	// // Write the batch
-	// if err := c.Write(bp); err != nil {
-	// 	return err
-	// }
-
-	// // Close client resources
-	// if err := c.Close(); err != nil {
-	// 	return err
-	// }
+	if err := c.Write(bp); err != nil {
+		return err
+	}
 
 	return nil
 }

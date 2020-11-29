@@ -12,6 +12,7 @@ import (
 
 	"github.com/aaaasmile/iot-invido/conf"
 	"github.com/aaaasmile/iot-invido/web/idl"
+	"github.com/aaaasmile/iot-invido/web/iot/sensor"
 )
 
 type PageCtx struct {
@@ -95,7 +96,7 @@ func writeErrorResponse(w http.ResponseWriter, errorcode int, resp interface{}) 
 	return nil
 }
 
-func listenStatus(statusCh chan *idl.SensorState) {
+func listenStatus(statusCh chan *sensor.SensorState) {
 	log.Println("Waiting for status")
 	for {
 		st := <-statusCh
@@ -123,6 +124,6 @@ func InitFromConfig(debug bool) error {
 }
 
 func init() {
-	statusCh := make(chan *idl.SensorState)
+	statusCh := make(chan *sensor.SensorState)
 	go listenStatus(statusCh)
 }
