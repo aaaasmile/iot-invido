@@ -16,6 +16,7 @@ type SensorState struct {
 	Co2       float32   `json:"co2"`
 	Voc       float32   `json:"voc"`
 	TimeStamp time.Time `json:"timeStamp"`
+	IaqClass  string    `json:"iaqclass"`
 }
 
 func (ss *SensorState) GetAirQualityTag() string {
@@ -36,6 +37,7 @@ func (ss *SensorState) GetAirQualityTag() string {
 	} else if iaq >= 00 && iaq <= 50 {
 		iaqstr = "Good"
 	}
+	ss.IaqClass = iaqstr
 	return iaqstr
 }
 

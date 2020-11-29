@@ -16,15 +16,40 @@ export default {
             place: '',
             color: '',
         },
+        getClassColor: (iaqclass) => {
+            switch (iaqclass) {
+                case "Hazardous":
+                    return "red"
+                case "Very Unhealthy":
+                    return "red lighten-4"
+                case "More than Unhealthy":
+                    return "orange"
+                case "Unhealthy":
+                    return "amber"
+                case "Unhealthy for Sensitive Groups":
+                    return "yellow"
+                case "Moderate":
+                    return "lime accent-3"
+                case "Good":
+                    return "green"
+            }
+            return ""
+        },
         measures: [],
     },
     mutations: {
         sensorstate(state, dataArr) {
             state.measures = dataArr
             if (dataArr.length <= 0) {
+                state.last = {}
                 return
             }
+            dataArr.forEach(element => {
+                element.color = state.getClassColor(element.iaqclass)
+            });
+
             let data = dataArr[dataArr.length - 1]
+            state.last = {}
             let state1 = state.last
             state1.timeStamp = data.timeStamp
             state1.tempraw = data.tempraw
@@ -40,5 +65,6 @@ export default {
             state1.sensorid = data.sensorid
             state1.place = data.place
         }
-    }
+    },
+    
 }

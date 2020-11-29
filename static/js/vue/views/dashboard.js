@@ -76,7 +76,7 @@ export default {
             >
               <div>
                 <div class="font-weight-normal">
-                  <strong>{{ measure.iaq }}</strong> @{{ measure.timeStamp }}
+                  IAQ <strong>{{ measure.iaq }}</strong> @{{ measure.timeStamp }}
                 </div>
                 <div>Temperature: {{ measure.temp }}</div>
                 <div>Humidiy: {{ measure.humy }}</div>
