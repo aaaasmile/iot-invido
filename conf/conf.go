@@ -8,13 +8,16 @@ import (
 )
 
 type Config struct {
-	ServiceURL      string
-	RootURLPattern  string
-	UseRelativeRoot bool
-	DebugVerbose    bool
-	OmxCmdParams    string
-	DBPath          string
-	TmpInfo         string
+	ServiceURL     string
+	RootURLPattern string
+	DebugVerbose   bool
+	VueLibName     string
+	Influx         *Influx
+}
+
+type Influx struct {
+	DbName string
+	DbHost string
 }
 
 var Current = &Config{}

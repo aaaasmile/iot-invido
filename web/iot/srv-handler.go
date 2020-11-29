@@ -15,8 +15,9 @@ import (
 )
 
 type PageCtx struct {
-	RootUrl string
-	Buildnr string
+	RootUrl    string
+	Buildnr    string
+	VueLibName string
 }
 
 func getURLForRoute(uri string) string {
@@ -60,8 +61,9 @@ func handleGet(w http.ResponseWriter, req *http.Request) error {
 	log.Println("GET requested ", u)
 
 	pagectx := PageCtx{
-		RootUrl: conf.Current.RootURLPattern,
-		Buildnr: idl.Buildnr,
+		RootUrl:    conf.Current.RootURLPattern,
+		Buildnr:    idl.Buildnr,
+		VueLibName: conf.Current.VueLibName,
 	}
 	templName := "templates/vue/index.html"
 

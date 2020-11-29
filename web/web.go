@@ -12,7 +12,6 @@ import (
 	"time"
 
 	"github.com/aaaasmile/iot-invido/conf"
-	"github.com/aaaasmile/iot-invido/util"
 	"github.com/aaaasmile/iot-invido/web/iot"
 )
 
@@ -23,7 +22,6 @@ func RunService(configfile string) error {
 	if err := iot.InitFromConfig(conf.Current.DebugVerbose); err != nil {
 		return err
 	}
-	util.UseRelativeRoot = conf.Current.UseRelativeRoot
 
 	var wait time.Duration
 	serverurl := conf.Current.ServiceURL

@@ -1,6 +1,11 @@
 # configuration for iot-invido
 ServiceURL = "127.0.0.1:5589" 
-RootURLPattern = "/" # keep in main for the proxy
-UseRelativeRoot = true
+RootURLPattern = "/" # on target,  keep in main for the proxy
 DebugVerbose = false
+VueLibName = "vue_prod.js"
+
+[Influx]
+DbName = "iotair"
+DbHost = "http://localhost:8086"
+
 

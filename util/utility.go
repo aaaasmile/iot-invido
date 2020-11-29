@@ -13,7 +13,10 @@ import (
 )
 
 var rootPath string
-var UseRelativeRoot = true
+
+const (
+	useRelativeRoot = true
+)
 
 func GetEncryptedPasswordFromPrompt() string {
 	reader := bufio.NewReader(os.Stdin)
@@ -37,7 +40,7 @@ func GetUserLogFile(serviceName string) string {
 }
 
 func GetFullPath(relPath string) string {
-	if UseRelativeRoot {
+	if useRelativeRoot {
 		return relPath
 	}
 
