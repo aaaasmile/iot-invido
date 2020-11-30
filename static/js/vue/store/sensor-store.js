@@ -39,13 +39,18 @@ export default {
     },
     mutations: {
         sensorstate(state, dataArr) {
-            state.measures = dataArr
+            state.measures = []
             if (dataArr.length <= 0) {
                 state.last = {}
                 return
             }
+            let ix = 0
             dataArr.forEach(element => {
-                element.color = state.getClassColor(element.iaqclass)
+                if (ix < 30) {
+                    element.color = state.getClassColor(element.iaqclass)
+                    state.measures.push(element)
+                }
+                ix++
             });
 
             let data = dataArr[dataArr.length - 1]
@@ -66,5 +71,5 @@ export default {
             state1.place = data.place
         }
     },
-    
+
 }

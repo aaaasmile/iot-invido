@@ -68,7 +68,7 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 
 	query := `
 	from(bucket:"%s")
-		|> range(start: -1h)
+		|> range(start: -2h)
 		|> filter(fn: (r) => r._measurement == "%s")
 		|> filter(fn: (r) => r["_field"] == "iaq")
 		|> filter(fn: (r) => r["place"] == "Home")
@@ -87,11 +87,12 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 		// 	fmt.Printf("table: %s\n", result.TableMetadata().String())
 		// }
 		// Access data
-		//fmt.Printf("*** value: %v\n", result.Record().Value())
+		fmt.Printf("*** value: %v\n", result.Record().Values())
 		unk := result.Record().Value()
 		if fv, ok := unk.(float64); ok {
 			ss := sensor.SensorState{
-				Iaq: float32(fv),
+				Iaq:      float32(fv),
+				IaqClass: result.Record().ValueByKey("air-quality-class").(string),
 			}
 			list = append(list, ss)
 		} else {
