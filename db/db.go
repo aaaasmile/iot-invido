@@ -1,7 +1,9 @@
 package db
 
 import (
+	"context"
 	"fmt"
+	"log"
 	"time"
 
 	"github.com/aaaasmile/iot-invido/web/idl"
@@ -54,7 +56,39 @@ func (conn *InfluxDbConn) InsertSensorData(name string, useDeltaTime bool, prevT
 	// Flush writes
 	writeAPI.Flush()
 
-	fmt.Println("** Batch point inserted ", p)
-
+	log.Println("Batch point inserted ", p)
 	return nil
+}
+
+func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
+	client := influxdb2.NewClient(conn.dbHost, conn.token)
+	defer client.Close()
+
+	list := []sensor.SensorState{}
+
+	query := `
+	from(bucket:"%s")
+		|> range(start: -1h)
+		|> filter(fn: (r) => r._measurement == "%s")
+	`
+	query = fmt.Sprintf(query, conn.bucketName, name)
+	queryAPI := client.QueryAPI(conn.org)
+	result, err := queryAPI.Query(context.Background(), query)
+	if err != nil {
+		log.Println("Error on query compile")
+		return nil, err
+	}
+	for result.Next() {
+		// Notice when group key has changed
+		// if result.TableChanged() {
+		// 	fmt.Printf("table: %s\n", result.TableMetadata().String())
+		// }
+		// Access data
+		fmt.Printf("*** value: %v\n", result.Record().Value())
+	}
+
+	if result.Err() != nil {
+		return nil, fmt.Errorf("query parsing error: %v", result.Err().Error())
+	}
+	return list, nil
 }

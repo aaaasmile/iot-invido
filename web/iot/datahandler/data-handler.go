@@ -1,6 +1,7 @@
 package datahandler
 
 import (
+	"log"
 	"net/http"
 	"time"
 
@@ -14,7 +15,13 @@ type HandleData struct {
 	Influx *idl.Influx
 }
 
+type RespData struct {
+	Status   string               `json:"status"`
+	DataView []sensor.SensorState `json:"dataview"`
+}
+
 func (hd *HandleData) HandleTestInsertLine(w http.ResponseWriter, req *http.Request) error {
+	log.Println("Insert test data")
 	conn := db.NewInfluxConn(hd.Influx)
 	sensState := sensor.SensorState{SensorID: "Test", Place: "Home"}
 	sensState.SetRandomData()
@@ -25,13 +32,26 @@ func (hd *HandleData) HandleTestInsertLine(w http.ResponseWriter, req *http.Requ
 	}
 
 	list := []sensor.SensorState{sensState}
-	rspdata := struct {
-		Status   string               `json:"status"`
-		DataView []sensor.SensorState `json:"dataview"`
-	}{
+	rspdata := RespData{
 		Status:   "OK",
 		DataView: list,
 	}
 
+	return util.WriteJsonResp(w, rspdata)
+}
+
+func (hd *HandleData) HandleFetchData(w http.ResponseWriter, req *http.Request) error {
+	log.Println("Fetch data")
+	conn := db.NewInfluxConn(hd.Influx)
+
+	list, err := conn.FetchData("SimBM680")
+	if err != nil {
+		return err
+	}
+
+	rspdata := RespData{
+		Status:   "OK",
+		DataView: list,
+	}
 	return util.WriteJsonResp(w, rspdata)
 }
