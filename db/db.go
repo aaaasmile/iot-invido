@@ -70,6 +70,9 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 	from(bucket:"%s")
 		|> range(start: -1h)
 		|> filter(fn: (r) => r._measurement == "%s")
+		|> filter(fn: (r) => r["_field"] == "iaq")
+		|> filter(fn: (r) => r["place"] == "Home")
+		|> filter(fn: (r) => r["sensor-id"] == "Test")
 	`
 	query = fmt.Sprintf(query, conn.bucketName, name)
 	queryAPI := client.QueryAPI(conn.org)
@@ -84,7 +87,16 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 		// 	fmt.Printf("table: %s\n", result.TableMetadata().String())
 		// }
 		// Access data
-		fmt.Printf("*** value: %v\n", result.Record().Value())
+		//fmt.Printf("*** value: %v\n", result.Record().Value())
+		unk := result.Record().Value()
+		if fv, ok := unk.(float64); ok {
+			ss := sensor.SensorState{
+				Iaq: float32(fv),
+			}
+			list = append(list, ss)
+		} else {
+			fmt.Println("** Not reco", unk)
+		}
 	}
 
 	if result.Err() != nil {
