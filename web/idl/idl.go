@@ -6,6 +6,8 @@ var (
 )
 
 type Influx struct {
-	DbName string
-	DbHost string
+	BucketName string
+	DbHost     string
+	Org        string
+	Token      string
 }
