@@ -15,7 +15,7 @@ type HandleData struct {
 }
 
 func (hd *HandleData) HandleTestInsertLine(w http.ResponseWriter, req *http.Request) error {
-	conn := db.NewInfluxConn(hd.Influx.DbHost, hd.Influx.DbName)
+	conn := db.NewInfluxConn(hd.Influx)
 	sensState := sensor.SensorState{SensorID: "Test", Place: "Home"}
 	sensState.SetRandomData()
 

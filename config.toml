@@ -8,7 +8,9 @@ ServiceURL = "192.168.2.254:5589"
 RootURLPattern = "/iot/"
 DebugVerbose = false
 VueLibName = "vue.js"
+TokenFilename = "token.json"
 
 [Influx]
-DbName = "iotair"
+BucketName = "iotair"
 DbHost = "http://localhost:8086"
+Org = "invido"
