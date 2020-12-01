@@ -19,8 +19,8 @@ type HandleData struct {
 }
 
 type RespData struct {
-	Status   string               `json:"status"`
-	DataView []sensor.SensorState `json:"dataview"`
+	Status   string                `json:"status"`
+	DataView []*sensor.SensorState `json:"dataview"`
 }
 
 func (hd *HandleData) HandleTestInsertLine(w http.ResponseWriter, req *http.Request) error {
@@ -34,7 +34,7 @@ func (hd *HandleData) HandleTestInsertLine(w http.ResponseWriter, req *http.Requ
 		return err
 	}
 
-	list := []sensor.SensorState{sensState}
+	list := []*sensor.SensorState{&sensState}
 	rspdata := RespData{
 		Status:   "OK",
 		DataView: list,

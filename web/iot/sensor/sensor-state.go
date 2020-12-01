@@ -82,11 +82,6 @@ func (ss *SensorState) SetRandomData() {
 }
 
 func (ss *SensorState) SetMembersFromDBMapValues(mapValues map[string]interface{}) error {
-	// tt, err := time.Parse(time.RFC3339, mapValues["_time"])
-	// if err != nil {
-	// 	log.Println("Error on parsing timestamp")
-	// 	return err
-	// }
 	var tt time.Time
 	var ok bool
 	var fval float32

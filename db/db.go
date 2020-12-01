@@ -55,11 +55,9 @@ func (conn *InfluxDbConn) InsertSensorData(name string, useDeltaTime bool, prevT
 	return nil
 }
 
-func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
+func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) {
 	client := influxdb2.NewClient(conn.dbHost, conn.token)
 	defer client.Close()
-
-	list := []sensor.SensorState{}
 
 	query := `
 	from(bucket:"%s")
@@ -74,6 +72,12 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 		log.Println("Error on query compile")
 		return nil, err
 	}
+
+	list := []*sensor.SensorState{}
+	ix := 0
+	currField := ""
+	insert := true
+	var ss *sensor.SensorState
 	for result.Next() {
 		// Notice when group key has changed
 		// if result.TableChanged() {
@@ -81,7 +85,7 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 		// }
 		// Access data
 		//fmt.Printf("*** value: %v\n", result.Record().Values())
-		ss := sensor.SensorState{}
+
 		mapValues := result.Record().Values()
 		//la mapValues è una mappa di coppie valori key/value
 		// Per un dato punto (chiave _time) si hanno unsa serie di coppie dove si ha il valore del campo, il suo nome e i vari tags.
@@ -92,12 +96,36 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 		//        map["_time"] ti dice il timestamp
 		//        map["_value"] ti dice il valore
 		// tutte le altre chiavi ti danno delle info in più.
+		// Esempio: Se ho 10 timestamp nel mio range, ed ho richiesto 3 campi,
+		//          questo Next() verrà chiamato 3 x 10 ogni volta con un campo diverso, ma usando sempre gli stessi timestamps
+		//          È un punto che ho fatto fatica a capire, in quanto salvando un'instanza di SensorState, improvvisamente mi ritrovo con molti più record.
 
 		// for k, v := range mapValues {
 		// 	fmt.Println("*** k: ", k)
 		// 	fmt.Println("*** v: ", v)
 		// }
 		//fmt.Println("*** values: ", mapValues)
+		if str, ok := mapValues["_field"].(string); ok {
+			if currField == "" {
+				currField = str
+				insert = true
+				ix = 0
+			} else if currField != str {
+				insert = false
+				ix = 0
+				currField = str
+				log.Println("Processing the field")
+			}
+		} else {
+			return nil, fmt.Errorf("Unable to read the field caption")
+		}
+
+		if insert {
+			ss = &sensor.SensorState{}
+		} else {
+			ss = list[ix]
+		}
+
 		ss.SetMembersFromDBMapValues(mapValues)
 		fmt.Println("*** ss is : ", ss)
 		// if fv, ok := mapValues["iaq"]; ok {
@@ -106,8 +134,11 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 		// if fv, ok := mapValues["iaqclass"]; ok {
 		// 	ss.IaqClass = fv.(string)
 		// }
-		// if len(list) < 10 {
-		list = append(list, ss)
+		if insert {
+			list = append(list, ss)
+		} else {
+			ix++
+		}
 		// }
 	}
 
