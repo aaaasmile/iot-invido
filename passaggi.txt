@@ -120,3 +120,10 @@ Ho creato a linea di comando con influx.exe un database:
 create database iotair
 Dove voglio mettere dentro tutte le misure del mio sensore.
 
+=== Tags
+I tags in influxdb servono per filtrare dei dati e per avere dei punti per aggregare i dati.
+Il nome del sensore o il uogo dove si trova possono avere un senso (la temperatura in un dato luogo).
+All'inizio ho usato airiaq class, che è una compressione del valore iaq, vale a dire un cluster.
+Il cluster però non si rapporta con altre misure, tipo temperatura con classe "Moderate" e per
+me non ha molto senso.  
+

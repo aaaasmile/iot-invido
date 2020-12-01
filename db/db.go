@@ -33,15 +33,9 @@ func (conn *InfluxDbConn) InsertSensorData(name string, useDeltaTime bool, prevT
 	defer client.Close()
 
 	writeAPI := client.WriteAPI(conn.org, conn.bucketName)
+	tags := senSt.GetTagsMap()
 
-	// tags := map[string]string{
-	// 	"air-quality-class": senSt.GetAirQualityTag(),
-	// 	"place":             senSt.Place,
-	// 	"sensor-id":         senSt.SensorID,
-	// }
-	tags := map[string]string{}
-
-	fields := senSt.GetInterfaceMap()
+	fields := senSt.GetFieldsMap()
 	ts := time.Now()
 	if useDeltaTime && senSt.TimeStamp.After(prevTimestamp) {
 		ts = prevTimestamp.Add(senSt.TimeStamp.Sub(prevTimestamp))
@@ -71,9 +65,7 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 	from(bucket:"%s")
 		|> range(start: -2h)
 		|> filter(fn: (r) => r._measurement == "%s")
-		|> filter(fn: (r) => r["_field"] == "iaq")
-		|> filter(fn: (r) => r["place"] == "Home")
-		|> filter(fn: (r) => r["sensor-id"] == "Test")
+		|> filter(fn: (r) => r["_field"] == "temperature" or r["_field"] == "iaq")
 	`
 	query = fmt.Sprintf(query, conn.bucketName, name)
 	queryAPI := client.QueryAPI(conn.org)
@@ -89,16 +81,34 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 		// }
 		// Access data
 		//fmt.Printf("*** value: %v\n", result.Record().Values())
-		unk := result.Record().Value()
-		if fv, ok := unk.(float64); ok {
-			ss := sensor.SensorState{
-				Iaq:      float32(fv),
-				IaqClass: result.Record().ValueByKey("air-quality-class").(string),
-			}
-			list = append(list, ss)
-		} else {
-			fmt.Println("** Not reco", unk)
-		}
+		ss := sensor.SensorState{}
+		mapValues := result.Record().Values()
+		//la mapValues è una mappa di coppie valori key/value
+		// Per un dato punto (chiave _time) si hanno unsa serie di coppie dove si ha il valore del campo, il suo nome e i vari tags.
+		// Per esempio un'istanza di mapValues è:
+		//    map[_field:temperature _measurement:SimBM680 _start:2020-12-01 19:08:12.5700177 +0000 UTC _stop:2020-12-01 21:08:12.5700177 +0000 UTC _time:2020-12-01
+		//    20:36:22.501973 +0000 UTC _value:23.70146942138672 place:Home result:_result sensor-id:Test table:1]
+		// Quindi map["_field"] ti dice qual è il campo del mapValues in questione
+		//        map["_time"] ti dice il timestamp
+		//        map["_value"] ti dice il valore
+		// tutte le altre chiavi ti danno delle info in più.
+
+		// for k, v := range mapValues {
+		// 	fmt.Println("*** k: ", k)
+		// 	fmt.Println("*** v: ", v)
+		// }
+		//fmt.Println("*** values: ", mapValues)
+		ss.SetMembersFromDBMapValues(mapValues)
+		fmt.Println("*** ss is : ", ss)
+		// if fv, ok := mapValues["iaq"]; ok {
+		// 	ss.Iaq = float32(fv.(float64))
+		// }
+		// if fv, ok := mapValues["iaqclass"]; ok {
+		// 	ss.IaqClass = fv.(string)
+		// }
+		// if len(list) < 10 {
+		list = append(list, ss)
+		// }
 	}
 
 	if result.Err() != nil {
