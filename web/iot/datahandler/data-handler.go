@@ -93,6 +93,7 @@ func (hd *HandleData) HandlePubData(w http.ResponseWriter, req *http.Request) er
 				case "IAQ":
 					value, _ := strconv.ParseFloat(myVal, 32)
 					sensState.Iaq = float32(value)
+					sensState.CalculateAirQualityClass(sensState.Iaq)
 				case "IAQA":
 					value, _ := strconv.ParseFloat(myVal, 32)
 					sensState.Iaqacc = float32(value)
@@ -111,7 +112,7 @@ func (hd *HandleData) HandlePubData(w http.ResponseWriter, req *http.Request) er
 				}
 			}
 		}
-		sensState.CalculateAirQualityTag()
+
 		log.Println("Recognized sensor data: ", sensState)
 		conn := db.NewInfluxConn(hd.Influx)
 		if err := conn.InsertSensorData("SimBM680", false, sensState.TimeStamp, &sensState); err != nil {

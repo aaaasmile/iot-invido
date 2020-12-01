@@ -46,12 +46,10 @@ func (conn *InfluxDbConn) InsertSensorData(name string, useDeltaTime bool, prevT
 		tags,
 		fields,
 		time.Now())
-	// write point asynchronously
 	writeAPI.WritePoint(p)
-	// Flush writes
 	writeAPI.Flush()
 
-	log.Println("Batch point inserted ", p.Name())
+	log.Println("Batch asynch point inserted ", p.Name())
 	return nil
 }
 
@@ -59,11 +57,14 @@ func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) 
 	client := influxdb2.NewClient(conn.dbHost, conn.token)
 	defer client.Close()
 
+	// Sui campi da ritornare, meno sono e meglio è. La mia UI ne richiede diversi.
 	query := `
 	from(bucket:"%s")
 		|> range(start: -2h)
 		|> filter(fn: (r) => r._measurement == "%s")
-		|> filter(fn: (r) => r["_field"] == "temperature" or r["_field"] == "iaq")
+		|> filter(fn: (r) => r["_field"] == "temperature" or r["_field"] == "iaq" 
+				 or r["_field"] == "pressure" or r["_field"] == "humidity" 
+				 or r["_field"] == "co2" or r["_field"] == "iaqaccurancy")
 	`
 	query = fmt.Sprintf(query, conn.bucketName, name)
 	queryAPI := client.QueryAPI(conn.org)
@@ -79,17 +80,11 @@ func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) 
 	insert := true
 	var ss *sensor.SensorState
 	for result.Next() {
-		// Notice when group key has changed
-		// if result.TableChanged() {
-		// 	fmt.Printf("table: %s\n", result.TableMetadata().String())
-		// }
-		// Access data
-		//fmt.Printf("*** value: %v\n", result.Record().Values())
 
 		mapValues := result.Record().Values()
 		//la mapValues è una mappa di coppie valori key/value
-		// Per un dato punto (chiave _time) si hanno unsa serie di coppie dove si ha il valore del campo, il suo nome e i vari tags.
-		// Per esempio un'istanza di mapValues è:
+		// Per un dato punto (chiave _time) si hanno una serie di coppie dove si ha il valore del campo, il suo nome e i vari tags.
+		// Per esempio un'istanza di mapValues per undato field ad un dato timestamp è:
 		//    map[_field:temperature _measurement:SimBM680 _start:2020-12-01 19:08:12.5700177 +0000 UTC _stop:2020-12-01 21:08:12.5700177 +0000 UTC _time:2020-12-01
 		//    20:36:22.501973 +0000 UTC _value:23.70146942138672 place:Home result:_result sensor-id:Test table:1]
 		// Quindi map["_field"] ti dice qual è il campo del mapValues in questione
@@ -99,6 +94,7 @@ func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) 
 		// Esempio: Se ho 10 timestamp nel mio range, ed ho richiesto 3 campi,
 		//          questo Next() verrà chiamato 3 x 10 ogni volta con un campo diverso, ma usando sempre gli stessi timestamps
 		//          È un punto che ho fatto fatica a capire, in quanto salvando un'instanza di SensorState, improvvisamente mi ritrovo con molti più record.
+		// Risulta evidente che mostrare più campi per un timestamp non è ideale e risulta in una quantità maggiore di dati da combinare.
 
 		// for k, v := range mapValues {
 		// 	fmt.Println("*** k: ", k)
@@ -114,7 +110,7 @@ func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) 
 				insert = false
 				ix = 0
 				currField = str
-				log.Println("Processing the field")
+				log.Println("Processing the field", str)
 			}
 		} else {
 			return nil, fmt.Errorf("Unable to read the field caption")
@@ -127,13 +123,7 @@ func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) 
 		}
 
 		ss.SetMembersFromDBMapValues(mapValues)
-		fmt.Println("*** ss is : ", ss)
-		// if fv, ok := mapValues["iaq"]; ok {
-		// 	ss.Iaq = float32(fv.(float64))
-		// }
-		// if fv, ok := mapValues["iaqclass"]; ok {
-		// 	ss.IaqClass = fv.(string)
-		// }
+		//fmt.Println("*** ss is : ", ss)
 		if insert {
 			list = append(list, ss)
 		} else {
@@ -141,6 +131,7 @@ func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) 
 		}
 		// }
 	}
+	log.Println("Collected points : ", len(list))
 
 	if result.Err() != nil {
 		return nil, fmt.Errorf("query parsing error: %v", result.Err().Error())
