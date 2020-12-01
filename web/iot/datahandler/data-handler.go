@@ -111,6 +111,7 @@ func (hd *HandleData) HandlePubData(w http.ResponseWriter, req *http.Request) er
 				}
 			}
 		}
+		sensState.CalculateAirQualityTag()
 		log.Println("Recognized sensor data: ", sensState)
 		conn := db.NewInfluxConn(hd.Influx)
 		if err := conn.InsertSensorData("SimBM680", false, sensState.TimeStamp, &sensState); err != nil {

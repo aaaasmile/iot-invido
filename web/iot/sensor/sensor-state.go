@@ -22,7 +22,7 @@ type SensorState struct {
 	IaqClass  string    `json:"iaqclass"`
 }
 
-func (ss *SensorState) GetAirQualityTag() string {
+func (ss *SensorState) CalculateAirQualityTag() string {
 	iaqstr := ""
 	iaq := ss.Iaq
 	if iaq > 301 {
@@ -56,6 +56,7 @@ func (ss *SensorState) GetInterfaceMap() map[string]interface{} {
 		"iaqaccurancy": ss.Iaqacc,
 		"co2":          ss.Co2,
 		"voc":          ss.Voc,
+		"iaqclass":     ss.IaqClass,
 	}
 	return fields
 }
@@ -69,4 +70,5 @@ func (ss *SensorState) SetRandomData() {
 	ss.Iaqacc = 3
 	ss.Co2 = 500 + rand.Float32()*400.0
 	ss.Voc = 1.34 + +rand.Float32()*13.0
+	ss.CalculateAirQualityTag()
 }

@@ -34,11 +34,12 @@ func (conn *InfluxDbConn) InsertSensorData(name string, useDeltaTime bool, prevT
 
 	writeAPI := client.WriteAPI(conn.org, conn.bucketName)
 
-	tags := map[string]string{
-		"air-quality-class": senSt.GetAirQualityTag(),
-		"place":             senSt.Place,
-		"sensor-id":         senSt.SensorID,
-	}
+	// tags := map[string]string{
+	// 	"air-quality-class": senSt.GetAirQualityTag(),
+	// 	"place":             senSt.Place,
+	// 	"sensor-id":         senSt.SensorID,
+	// }
+	tags := map[string]string{}
 
 	fields := senSt.GetInterfaceMap()
 	ts := time.Now()
@@ -56,7 +57,7 @@ func (conn *InfluxDbConn) InsertSensorData(name string, useDeltaTime bool, prevT
 	// Flush writes
 	writeAPI.Flush()
 
-	log.Println("Batch point inserted ", p)
+	log.Println("Batch point inserted ", p.Name())
 	return nil
 }
 

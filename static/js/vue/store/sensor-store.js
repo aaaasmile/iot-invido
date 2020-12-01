@@ -53,7 +53,7 @@ export default {
                 ix++
             });
 
-            let data = dataArr[dataArr.length - 1]
+            let data = state.measures[state.measures.length - 1]
             state.last = {}
             let state1 = state.last
             state1.timeStamp = data.timeStamp
