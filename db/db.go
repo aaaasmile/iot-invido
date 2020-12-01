@@ -58,6 +58,7 @@ func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) 
 	defer client.Close()
 
 	// Sui campi da ritornare, meno sono e meglio è. La mia UI ne richiede diversi.
+	// Questa è una query che ritorna gli ultimi 20 punti da quando la si chiama
 	query := `
 	from(bucket:"%s")
 		|> range(start: -2h)
@@ -65,6 +66,8 @@ func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) 
 		|> filter(fn: (r) => r["_field"] == "temperature" or r["_field"] == "iaq" 
 				 or r["_field"] == "pressure" or r["_field"] == "humidity" 
 				 or r["_field"] == "co2" or r["_field"] == "iaqaccurancy")
+		|> sort(columns:["_time"], desc: true)
+		|> limit(n: 20)
 	`
 	query = fmt.Sprintf(query, conn.bucketName, name)
 	queryAPI := client.QueryAPI(conn.org)
@@ -129,7 +132,6 @@ func (conn *InfluxDbConn) FetchData(name string) ([]*sensor.SensorState, error) 
 		} else {
 			ix++
 		}
-		// }
 	}
 	log.Println("Collected points : ", len(list))
 
