@@ -87,7 +87,7 @@ func (conn *InfluxDbConn) FetchData(name string) ([]sensor.SensorState, error) {
 		// 	fmt.Printf("table: %s\n", result.TableMetadata().String())
 		// }
 		// Access data
-		fmt.Printf("*** value: %v\n", result.Record().Values())
+		//fmt.Printf("*** value: %v\n", result.Record().Values())
 		unk := result.Record().Value()
 		if fv, ok := unk.(float64); ok {
 			ss := sensor.SensorState{

@@ -15,7 +15,10 @@ func handlePost(w http.ResponseWriter, req *http.Request) error {
 	log.Println("Check the last path ", lastPath)
 	switch lastPath {
 	case "PubData":
-		err = handlePubData(w, req)
+		hd := datahandler.HandleData{
+			Influx: conf.Current.Influx,
+		}
+		err = hd.HandlePubData(w, req)
 	case "FetchData":
 		hd := datahandler.HandleData{
 			Influx: conf.Current.Influx,
@@ -31,9 +34,4 @@ func handlePost(w http.ResponseWriter, req *http.Request) error {
 	}
 
 	return err
-}
-
-func handlePubData(w http.ResponseWriter, req *http.Request) error {
-	// TODO... parse the data
-	return nil
 }
