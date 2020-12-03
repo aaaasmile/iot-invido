@@ -1,6 +1,7 @@
 package datahandler
 
 import (
+	"fmt"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -8,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/aaaasmile/iot-invido/conf"
 	"github.com/aaaasmile/iot-invido/db"
 	"github.com/aaaasmile/iot-invido/util"
 	"github.com/aaaasmile/iot-invido/web/idl"
@@ -15,7 +17,8 @@ import (
 )
 
 type HandleData struct {
-	Influx *idl.Influx
+	Influx    *idl.Influx
+	SensorCfg *conf.SensorConfig
 }
 
 type RespData struct {
@@ -60,15 +63,22 @@ func (hd *HandleData) HandleFetchData(w http.ResponseWriter, req *http.Request) 
 }
 
 func (hd *HandleData) HandlePubData(w http.ResponseWriter, req *http.Request) error {
+	sensorName, err := hd.getSensorName(req.Header.Get("DeviceToken"))
+	if err != nil {
+		return err
+
+	}
+	log.Println("Receiving data from known device: ", sensorName)
 	rawbody, err := ioutil.ReadAll(req.Body)
 	if err != nil {
 		return err
 	}
+
 	lines := string(rawbody)
 	log.Println("Body is: ", lines)
 	ll := strings.Split(lines, "\n")
 	for _, line := range ll {
-		sensState := sensor.SensorState{SensorID: "BMI680-1", Place: "Home"}
+		sensState := sensor.SensorState{SensorID: sensorName, Place: "Home"}
 		fieldsArr := strings.Split(line, ",")
 		for _, fieldKV := range fieldsArr {
 			pair := strings.Split(fieldKV, ":")
@@ -122,4 +132,11 @@ func (hd *HandleData) HandlePubData(w http.ResponseWriter, req *http.Request) er
 	}
 	// Body is:  TS: 140255, TEMP-RAW: 21.41, PRES: 100174.00, HUMI-RAW: 47.32, GASO: 84509.00, IAQ: 25.00, IAQA: 0, TEMP: 21.35, HUMY: 47.46, CO2: 500.00, VOC: 0.50
 	return nil
+}
+
+func (hd *HandleData) getSensorName(deviceToken string) (string, error) {
+	if deviceToken != "" && deviceToken == hd.SensorCfg.ID {
+		return hd.SensorCfg.Name, nil
+	}
+	return "", fmt.Errorf("Device not allowed to publish data: %s", deviceToken)
 }

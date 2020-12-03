@@ -16,7 +16,8 @@ func handlePost(w http.ResponseWriter, req *http.Request) error {
 	switch lastPath {
 	case "PubData":
 		hd := datahandler.HandleData{
-			Influx: conf.Current.Influx,
+			Influx:    conf.Current.Influx,
+			SensorCfg: &conf.Current.SensorCfg,
 		}
 		err = hd.HandlePubData(w, req)
 	case "FetchData":
