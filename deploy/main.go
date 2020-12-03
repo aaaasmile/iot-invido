@@ -29,7 +29,7 @@ func main() {
 	flag.Parse()
 
 	rootDirRel := ".."
-	pathItems := []string{"iot-invido.bin", "static", "templates"}
+	pathItems := []string{"iot-invido.bin", "token.json", "static", "templates"}
 	switch *target {
 	case iotinvido:
 		pathItems = append(pathItems, "deploy/config_files/iot_config.toml")
