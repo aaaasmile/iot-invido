@@ -127,3 +127,10 @@ All'inizio ho usato airiaq class, che è una compressione del valore iaq, vale a
 Il cluster però non si rapporta con altre misure, tipo temperatura con classe "Moderate" e per
 me non ha molto senso.  
 
+== TLS Server
+Per lo sviluppo locale mi serve un server tls. Nel deployment uso nginx.
+keys and certificate:
+openssl genrsa -out server.key 2048
+openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
+srv.ListenAndServeTLS("keys/server.crt", "keys/server.key")
+

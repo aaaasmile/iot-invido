@@ -3,3 +3,5 @@
 *.pem
 iot-invido
 token.json
+keys/*.*
+keys/*

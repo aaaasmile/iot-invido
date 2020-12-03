@@ -25,7 +25,8 @@ func RunService(configfile string) error {
 
 	var wait time.Duration
 	serverurl := conf.Current.ServiceURL
-	finalServURL := fmt.Sprintf("http://%s%s", strings.Replace(serverurl, "0.0.0.0", "localhost", 1), conf.Current.RootURLPattern)
+	//finalServURL := fmt.Sprintf("http://%s%s", strings.Replace(serverurl, "0.0.0.0", "localhost", 1), conf.Current.RootURLPattern)
+	finalServURL := fmt.Sprintf("https://%s%s", strings.Replace(serverurl, "0.0.0.0", "localhost", 1), conf.Current.RootURLPattern)
 	finalServURL = strings.Replace(finalServURL, "127.0.0.1", "localhost", 1)
 	log.Println("Server started with URL ", serverurl)
 	log.Println("Try this url: ", finalServURL)
@@ -34,8 +35,11 @@ func RunService(configfile string) error {
 	http.HandleFunc(conf.Current.RootURLPattern, iot.APiHandler)
 	http.HandleFunc("/websocket", iot.WsHandler)
 
+	//tlsCfg := tls.Config{}
+
 	srv := &http.Server{
 		Addr: serverurl,
+		//TLSConfig: &tlsCfg,
 		// Good practice to set timeouts to avoid Slowloris attacks.
 		WriteTimeout: time.Second * 15,
 		ReadTimeout:  time.Second * 15,
@@ -45,7 +49,8 @@ func RunService(configfile string) error {
 
 	chShutdown := make(chan struct{}, 1)
 	go func(chs chan struct{}) {
-		if err := srv.ListenAndServe(); err != nil {
+		//if err := srv.ListenAndServe(); err != nil {
+		if err := srv.ListenAndServeTLS("keys/server.crt", "keys/server.key"); err != nil {
 			log.Println("Server is not listening anymore: ", err)
 			chs <- struct{}{}
 		}

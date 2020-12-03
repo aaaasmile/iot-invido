@@ -15,6 +15,7 @@ type Config struct {
 	DebugVerbose   bool
 	VueLibName     string
 	TokenFilename  string
+	UseTLS         bool
 	Influx         *idl.Influx
 }
 

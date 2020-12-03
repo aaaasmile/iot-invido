@@ -4,6 +4,7 @@ RootURLPattern = "/" # on target,  keep in main for the proxy
 DebugVerbose = false
 VueLibName = "vue_prod.js"
 TokenFilename = "token.json"
+UseTLS = false
 
 [Influx]
 BucketName = "iotair"

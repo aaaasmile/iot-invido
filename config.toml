@@ -9,6 +9,7 @@ RootURLPattern = "/iot/"
 DebugVerbose = false
 VueLibName = "vue.js"
 TokenFilename = "token.json"
+UseTLS = true
 
 [Influx]
 BucketName = "iotair"
