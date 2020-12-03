@@ -2,6 +2,10 @@
 *.bin
 *.pem
 iot-invido
+iot-invido.bin
 token.json
 keys/*.*
 keys/*
+deploy/deploy
+deploy/deploy.bin
+iot_config.toml
