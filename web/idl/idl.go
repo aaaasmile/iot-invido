@@ -2,7 +2,7 @@ package idl
 
 var (
 	Appname = "iot-invido"
-	Buildnr = "00.01.02.20201126-00"
+	Buildnr = "00.02.02.20201203-00"
 )
 
 type Influx struct {
