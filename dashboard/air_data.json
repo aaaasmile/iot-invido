@@ -20,27 +20,39 @@
      "data": [
       {
        "type": "cell",
-       "id": "06b3f87fba130000"
+       "id": "06b6c15242a93000"
       },
       {
        "type": "cell",
-       "id": "06b3f8e8acd30000"
+       "id": "06b6c15244293000"
       },
       {
        "type": "cell",
-       "id": "06b3fb4b5f130000"
+       "id": "06b6c15249293000"
       },
       {
        "type": "cell",
-       "id": "06b3fbd5cf130000"
+       "id": "06b6c15249e93000"
       },
       {
        "type": "cell",
-       "id": "06b3fc7278930000"
+       "id": "06b6c1524e693000"
       },
       {
        "type": "cell",
-       "id": "06b3fcbc49930000"
+       "id": "06b6c1524fa93000"
+      },
+      {
+       "type": "cell",
+       "id": "06b6c8e448e93000"
+      },
+      {
+       "type": "cell",
+       "id": "06b6c92c64693000"
+      },
+      {
+       "type": "cell",
+       "id": "06b6c9836be93000"
       }
      ]
     },
@@ -51,7 +63,7 @@
   },
   "included": [
    {
-    "id": "06b3f87fba130000",
+    "id": "06b6c15242a93000",
     "type": "cell",
     "attributes": {
      "x": 0,
@@ -63,13 +75,13 @@
      "view": {
       "data": {
        "type": "view",
-       "id": "06b3f87fba130000"
+       "id": "06b6c15242a93000"
       }
      }
     }
    },
    {
-    "id": "06b3f8e8acd30000",
+    "id": "06b6c15244293000",
     "type": "cell",
     "attributes": {
      "x": 4,
@@ -81,13 +93,13 @@
      "view": {
       "data": {
        "type": "view",
-       "id": "06b3f8e8acd30000"
+       "id": "06b6c15244293000"
       }
      }
     }
    },
    {
-    "id": "06b3fb4b5f130000",
+    "id": "06b6c15249293000",
     "type": "cell",
     "attributes": {
      "x": 4,
@@ -99,13 +111,13 @@
      "view": {
       "data": {
        "type": "view",
-       "id": "06b3fb4b5f130000"
+       "id": "06b6c15249293000"
       }
      }
     }
    },
    {
-    "id": "06b3fbd5cf130000",
+    "id": "06b6c15249e93000",
     "type": "cell",
     "attributes": {
      "x": 8,
@@ -117,13 +129,13 @@
      "view": {
       "data": {
        "type": "view",
-       "id": "06b3fbd5cf130000"
+       "id": "06b6c15249e93000"
       }
      }
     }
    },
    {
-    "id": "06b3fc7278930000",
+    "id": "06b6c1524e693000",
     "type": "cell",
     "attributes": {
      "x": 0,
@@ -135,13 +147,13 @@
      "view": {
       "data": {
        "type": "view",
-       "id": "06b3fc7278930000"
+       "id": "06b6c1524e693000"
       }
      }
     }
    },
    {
-    "id": "06b3fcbc49930000",
+    "id": "06b6c1524fa93000",
     "type": "cell",
     "attributes": {
      "x": 8,
@@ -153,21 +165,75 @@
      "view": {
       "data": {
        "type": "view",
-       "id": "06b3fcbc49930000"
+       "id": "06b6c1524fa93000"
+      }
+     }
+    }
+   },
+   {
+    "id": "06b6c8e448e93000",
+    "type": "cell",
+    "attributes": {
+     "x": 0,
+     "y": 8,
+     "w": 4,
+     "h": 4
+    },
+    "relationships": {
+     "view": {
+      "data": {
+       "type": "view",
+       "id": "06b6c8e448e93000"
+      }
+     }
+    }
+   },
+   {
+    "id": "06b6c92c64693000",
+    "type": "cell",
+    "attributes": {
+     "x": 4,
+     "y": 8,
+     "w": 4,
+     "h": 4
+    },
+    "relationships": {
+     "view": {
+      "data": {
+       "type": "view",
+       "id": "06b6c92c64693000"
+      }
+     }
+    }
+   },
+   {
+    "id": "06b6c9836be93000",
+    "type": "cell",
+    "attributes": {
+     "x": 8,
+     "y": 8,
+     "w": 4,
+     "h": 4
+    },
+    "relationships": {
+     "view": {
+      "data": {
+       "type": "view",
+       "id": "06b6c9836be93000"
       }
      }
     }
    },
    {
     "type": "view",
-    "id": "06b3f87fba130000",
+    "id": "06b6c15242a93000",
     "attributes": {
      "name": "Temperature",
      "properties": {
       "shape": "chronograf-v2",
       "queries": [
        {
-        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
+        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"temperature\")\n  |> filter(fn: (r) => r[\"place\"] == \"Home\")\n  |> filter(fn: (r) => r[\"sensor-id\"] == \"BMI680-1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
         "editMode": "advanced",
         "name": "",
         "builderConfig": {
@@ -265,7 +331,7 @@
    },
    {
     "type": "view",
-    "id": "06b3f8e8acd30000",
+    "id": "06b6c15244293000",
     "attributes": {
      "name": "Co2",
      "properties": {
@@ -328,14 +394,14 @@
    },
    {
     "type": "view",
-    "id": "06b3fb4b5f130000",
+    "id": "06b6c15249293000",
     "attributes": {
      "name": "IAQ",
      "properties": {
       "shape": "chronograf-v2",
       "queries": [
        {
-        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"iaq\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
+        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"iaq\")\n  |> filter(fn: (r) => r[\"place\"] == \"Home\")\n  |> filter(fn: (r) => r[\"sensor-id\"] == \"BMI680-1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
         "editMode": "advanced",
         "name": "",
         "builderConfig": {
@@ -433,7 +499,7 @@
    },
    {
     "type": "view",
-    "id": "06b3fbd5cf130000",
+    "id": "06b6c15249e93000",
     "attributes": {
      "name": "class iaq",
      "properties": {
@@ -441,7 +507,7 @@
       "type": "heatmap",
       "queries": [
        {
-        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"iaq\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
+        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"iaq\")\n  |> filter(fn: (r) => r[\"place\"] == \"Home\")\n  |> filter(fn: (r) => r[\"sensor-id\"] == \"BMI680-1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
         "editMode": "advanced",
         "name": "",
         "builderConfig": {
@@ -507,14 +573,14 @@
    },
    {
     "type": "view",
-    "id": "06b3fc7278930000",
+    "id": "06b6c1524e693000",
     "attributes": {
      "name": "Humidity",
      "properties": {
       "shape": "chronograf-v2",
       "queries": [
        {
-        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
+        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"humidity\")\n  |> filter(fn: (r) => r[\"place\"] == \"Home\")\n  |> filter(fn: (r) => r[\"sensor-id\"] == \"BMI680-1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
         "editMode": "advanced",
         "name": "",
         "builderConfig": {
@@ -612,14 +678,14 @@
    },
    {
     "type": "view",
-    "id": "06b3fcbc49930000",
+    "id": "06b6c1524fa93000",
     "attributes": {
      "name": "Pressure",
      "properties": {
       "shape": "chronograf-v2",
       "queries": [
        {
-        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pressure\")\n  |> aggregateWindow(every: v.windowPeriod, fn: last, createEmpty: false)\n  |> yield(name: \"last\")",
+        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"pressure\")\n  |> filter(fn: (r) => r[\"place\"] == \"Home\")\n  |> filter(fn: (r) => r[\"sensor-id\"] == \"BMI680-1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
         "editMode": "advanced",
         "name": "",
         "builderConfig": {
@@ -687,6 +753,312 @@
        },
        {
         "id": "342560a4-87e8-47cd-8193-baf38ba99896",
+        "type": "scale",
+        "hex": "#FF7E27",
+        "name": "Nineteen Eighty Four",
+        "value": 0
+       }
+      ],
+      "note": "",
+      "showNoteWhenEmpty": false,
+      "xColumn": "_time",
+      "generateXAxisTicks": null,
+      "xTotalTicks": 0,
+      "xTickStart": 0,
+      "xTickStep": 0,
+      "yColumn": "_value",
+      "generateYAxisTicks": null,
+      "yTotalTicks": 0,
+      "yTickStart": 0,
+      "yTickStep": 0,
+      "shadeBelow": false,
+      "position": "overlaid",
+      "timeFormat": "",
+      "hoverDimension": "",
+      "legendColorizeRows": false,
+      "legendOpacity": 0,
+      "legendOrientationThreshold": 0
+     }
+    }
+   },
+   {
+    "type": "view",
+    "id": "06b6c8e448e93000",
+    "attributes": {
+     "name": "Accurancy IAQ",
+     "properties": {
+      "shape": "chronograf-v2",
+      "queries": [
+       {
+        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"iaqaccurancy\")\n  |> filter(fn: (r) => r[\"place\"] == \"Home\")\n  |> filter(fn: (r) => r[\"sensor-id\"] == \"BMI680-1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "editMode": "advanced",
+        "name": "",
+        "builderConfig": {
+         "buckets": [],
+         "tags": [
+          {
+           "key": "_measurement",
+           "values": [],
+           "aggregateFunctionType": "filter"
+          }
+         ],
+         "functions": [
+          {
+           "name": "mean"
+          }
+         ],
+         "aggregateWindow": {
+          "period": "auto",
+          "fillValues": false
+         }
+        }
+       }
+      ],
+      "axes": {
+       "x": {
+        "bounds": [
+         "",
+         ""
+        ],
+        "label": "",
+        "prefix": "",
+        "suffix": "",
+        "base": "10",
+        "scale": "linear"
+       },
+       "y": {
+        "bounds": [
+         "",
+         ""
+        ],
+        "label": "",
+        "prefix": "",
+        "suffix": "",
+        "base": "10",
+        "scale": "linear"
+       }
+      },
+      "type": "line-plus-single-stat",
+      "legend": {},
+      "colors": [
+       {
+        "id": "base",
+        "type": "text",
+        "hex": "#00C9FF",
+        "name": "laser",
+        "value": 0
+       }
+      ],
+      "prefix": "",
+      "suffix": "",
+      "decimalPlaces": {
+       "isEnforced": true,
+       "digits": 2
+      },
+      "note": "",
+      "showNoteWhenEmpty": false,
+      "xColumn": "_time",
+      "generateXAxisTicks": null,
+      "xTotalTicks": 0,
+      "xTickStart": 0,
+      "xTickStep": 0,
+      "yColumn": "_value",
+      "generateYAxisTicks": null,
+      "yTotalTicks": 0,
+      "yTickStart": 0,
+      "yTickStep": 0,
+      "shadeBelow": false,
+      "position": "overlaid",
+      "timeFormat": "",
+      "hoverDimension": "",
+      "legendColorizeRows": false,
+      "legendOpacity": 0,
+      "legendOrientationThreshold": 0
+     }
+    }
+   },
+   {
+    "type": "view",
+    "id": "06b6c92c64693000",
+    "attributes": {
+     "name": "CO2",
+     "properties": {
+      "shape": "chronograf-v2",
+      "queries": [
+       {
+        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"co2\")\n  |> filter(fn: (r) => r[\"place\"] == \"Home\")\n  |> filter(fn: (r) => r[\"sensor-id\"] == \"BMI680-1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "editMode": "advanced",
+        "name": "",
+        "builderConfig": {
+         "buckets": [],
+         "tags": [
+          {
+           "key": "_measurement",
+           "values": [],
+           "aggregateFunctionType": "filter"
+          }
+         ],
+         "functions": [
+          {
+           "name": "mean"
+          }
+         ],
+         "aggregateWindow": {
+          "period": "auto",
+          "fillValues": false
+         }
+        }
+       }
+      ],
+      "axes": {
+       "x": {
+        "bounds": [
+         "",
+         ""
+        ],
+        "label": "",
+        "prefix": "",
+        "suffix": "",
+        "base": "10",
+        "scale": "linear"
+       },
+       "y": {
+        "bounds": [
+         "",
+         ""
+        ],
+        "label": "",
+        "prefix": "",
+        "suffix": "",
+        "base": "10",
+        "scale": "linear"
+       }
+      },
+      "type": "xy",
+      "legend": {},
+      "geom": "line",
+      "colors": [
+       {
+        "id": "aeac5d39-2b93-4333-89da-e91c11366e7b",
+        "type": "scale",
+        "hex": "#31C0F6",
+        "name": "Nineteen Eighty Four",
+        "value": 0
+       },
+       {
+        "id": "4adf38d2-47b9-4ea0-93cc-ac104be8b173",
+        "type": "scale",
+        "hex": "#A500A5",
+        "name": "Nineteen Eighty Four",
+        "value": 0
+       },
+       {
+        "id": "be9cdffd-d0a6-4ff8-8267-4c6ea7d92b06",
+        "type": "scale",
+        "hex": "#FF7E27",
+        "name": "Nineteen Eighty Four",
+        "value": 0
+       }
+      ],
+      "note": "",
+      "showNoteWhenEmpty": false,
+      "xColumn": "_time",
+      "generateXAxisTicks": null,
+      "xTotalTicks": 0,
+      "xTickStart": 0,
+      "xTickStep": 0,
+      "yColumn": "_value",
+      "generateYAxisTicks": null,
+      "yTotalTicks": 0,
+      "yTickStart": 0,
+      "yTickStep": 0,
+      "shadeBelow": false,
+      "position": "overlaid",
+      "timeFormat": "",
+      "hoverDimension": "",
+      "legendColorizeRows": false,
+      "legendOpacity": 0,
+      "legendOrientationThreshold": 0
+     }
+    }
+   },
+   {
+    "type": "view",
+    "id": "06b6c9836be93000",
+    "attributes": {
+     "name": "VOC",
+     "properties": {
+      "shape": "chronograf-v2",
+      "queries": [
+       {
+        "text": "from(bucket: \"iotair\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"SimBM680\")\n  |> filter(fn: (r) => r[\"_field\"] == \"voc\")\n  |> filter(fn: (r) => r[\"place\"] == \"Home\")\n  |> filter(fn: (r) => r[\"sensor-id\"] == \"BMI680-1\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+        "editMode": "advanced",
+        "name": "",
+        "builderConfig": {
+         "buckets": [],
+         "tags": [
+          {
+           "key": "_measurement",
+           "values": [],
+           "aggregateFunctionType": "filter"
+          }
+         ],
+         "functions": [
+          {
+           "name": "mean"
+          }
+         ],
+         "aggregateWindow": {
+          "period": "auto",
+          "fillValues": false
+         }
+        }
+       }
+      ],
+      "axes": {
+       "x": {
+        "bounds": [
+         "",
+         ""
+        ],
+        "label": "",
+        "prefix": "",
+        "suffix": "",
+        "base": "10",
+        "scale": "linear"
+       },
+       "y": {
+        "bounds": [
+         "",
+         ""
+        ],
+        "label": "",
+        "prefix": "",
+        "suffix": "",
+        "base": "10",
+        "scale": "linear"
+       }
+      },
+      "type": "xy",
+      "legend": {},
+      "geom": "line",
+      "colors": [
+       {
+        "id": "aeac5d39-2b93-4333-89da-e91c11366e7b",
+        "type": "scale",
+        "hex": "#31C0F6",
+        "name": "Nineteen Eighty Four",
+        "value": 0
+       },
+       {
+        "id": "4adf38d2-47b9-4ea0-93cc-ac104be8b173",
+        "type": "scale",
+        "hex": "#A500A5",
+        "name": "Nineteen Eighty Four",
+        "value": 0
+       },
+       {
+        "id": "be9cdffd-d0a6-4ff8-8267-4c6ea7d92b06",
         "type": "scale",
         "hex": "#FF7E27",
         "name": "Nineteen Eighty Four",
