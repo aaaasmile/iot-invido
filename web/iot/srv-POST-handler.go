@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/aaaasmile/iot-invido/conf"
+	"github.com/aaaasmile/iot-invido/util"
 	"github.com/aaaasmile/iot-invido/web/iot/datahandler"
 )
 
@@ -30,9 +31,22 @@ func handlePost(w http.ResponseWriter, req *http.Request) error {
 			Influx: conf.Current.Influx,
 		}
 		err = hd.HandleTestInsertLine(w, req)
+	case "CheckCredential":
+		err = handleCheckCredential(w, req)
 	default:
 		return fmt.Errorf("%s method is not supported", lastPath)
 	}
 
 	return err
+}
+
+func handleCheckCredential(w http.ResponseWriter, req *http.Request) error {
+	log.Println("Check credential")
+	rspdata := struct {
+		Valid bool
+	}{
+		Valid: false,
+	}
+
+	return util.WriteJsonResp(w, rspdata)
 }
