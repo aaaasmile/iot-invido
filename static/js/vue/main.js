@@ -63,7 +63,7 @@ export const app = new Vue({
 			console.log('Check credential')
       const tk = localStorage.getItem('tkcred')
 			const req = {token: tk}
-			API.CheckCredential(this, req, (res) => {
+			API.CheckAPIToken(this, req, (res) => {
         console.log('token validity  check: ', res.Valid)
         if (!res.Valid){
           let path = '/login'

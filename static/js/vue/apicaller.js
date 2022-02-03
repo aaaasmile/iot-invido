@@ -31,9 +31,9 @@ export default {
 			handleError(error, that)
 		});
 	},
-	CheckCredential(that, req, fnOK){
+	CheckAPIToken(that, req, fnOK){
 		console.log('Request is ', req)
-		that.$http.post("CheckCredential", JSON.stringify(req), { headers: { "content-type": "application/json" } }).then(result => {
+		that.$http.post("CheckAPIToken", JSON.stringify(req), { headers: { "content-type": "application/json" } }).then(result => {
 			console.log('Call result ', result.data)
 			that.loading = false
       if (fnOK){
