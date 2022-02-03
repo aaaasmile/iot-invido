@@ -1,22 +1,27 @@
-== iot-invido
+# iot-invido
 Questo service serve per ricevere dati dai miei dispositivi iot.
 Per esempio i dati letti dal  sensore BME680 sul ESP8266. Vedi il progetto GasTempBME680.
 
 Per stoppare il sevice si usa:
-sudo systemctl stop iot-invido
 
-== Deployment su ubuntu direttamente
-git pull --all
-./publish-iot.sh
+    sudo systemctl stop iot-invido
 
-== Deployment dettagli e preparazione
+## Deployment su ubuntu direttamente
+
+    git pull --all
+    ./publish-iot.sh
+
+## Deployment dettagli e preparazione
 Certbot va fatto alla fine, altrimenti ti cambia il file default e si ha un conflitto di siti già definiti.
 Configurazione del dominio iot.invido.it sul dns di aruba.
 
 Creare la struttura dell'applicazione
-~/app/go/iot-invido/current
-~/app/go/iot-invido/old
-~/app/go/iot-invido/zips
+
+
+    ~/app/go/iot-invido/current
+    ~/app/go/iot-invido/old
+    ~/app/go/iot-invido/zips
+
 In ~/build/ invece si fa il clone della repository iot-invido
 Qui si compila deploy.bin e si copia update-service.sh in ~/app/go/iot-invido/
 Poi si lancia ./publish-iot.sh
@@ -26,7 +31,8 @@ sudo systemctl enable iot-invido.service
 Ora si fa partire il service (resistente al reboot):
 sudo systemctl start iot-invido
 Per vedere i logs si usa:
-sudo journalctl -f -u iot-invido
+
+    sudo journalctl -f -u iot-invido
 
 Per ultimo si setta nginx
 cd /etc/nginx/sites-available
@@ -34,45 +40,52 @@ sudo cp live.invido.it  iot.invido.it
 poi cambio i link http e il nome del server usando i dati del nuovo service iot-invido con:
 sudo nano iot.invido.it
 Una verifica della configuraione con 
-sudo nginx -t
+
+    sudo nginx -t
 Se ci sono dei warning, cancellare il file e ripetere di nuovo fino a quando è tutto ok.
 Per esempio ho avuto il problema che, facendo l'update di certbot prima di settare nginx,
 certbot mi ha messo iot.invido.it nel file die default, in quanto non era configurato.
 
 Ora manca l'enable:
-sudo ln -s /etc/nginx/sites-available/iot.invido.it  /etc/nginx/sites-enabled/iot.invido.it
+
+    sudo ln -s /etc/nginx/sites-available/iot.invido.it  /etc/nginx/sites-enabled/iot.invido.it
 Ricevo dei warning sulla porta 443, che non dovrebbero causare problemi. Ora il restart:
-sudo systemctl restart nginx
+
+    sudo systemctl restart nginx
 
 Nella configurazione di nginx bisogna far passare il websocket. Basta aggiungere
 nella sezione location le seguenti due righe:
-proxy_set_header Upgrade $http_upgrade;
-proxy_set_header Connection "upgrade";
+
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
 Vedi il back dei file su D:\Hetzner\Backups\20201126\nginx
 
-== Problemi con Vue,js
+## Problemi con Vue,js
 Di solito uso come RootURLPattern nella configurazione qualcosa come /iot/
-Il problema è che nel caricare vue dietro al reverse proxy non posso usare direttamente
+Il problema ? che nel caricare vue dietro al reverse proxy non posso usare direttamente
 il link https://iot.invido.it/#/
 Quindi uso sul target RootURLPattern= "/" mentre nella configurazione nginx
 proxy_pass http://127.0.0.1:5589/;
 
 
-== Service Config
+## Service Config
 Questo il conetnuto del file che compare con:
 sudo nano /lib/systemd/system/iot-invido.service
-Poi si fa l'enable:
+Poi si fa l`enable:
 sudo systemctl enable iot-invido.service
 E infine lo start:
-sudo systemctl start iot-invido
+
+    sudo systemctl start iot-invido
 Logs sono disponibili con:
-sudo journalctl -f -u iot-invido
+
+    sudo journalctl -f -u iot-invido
 
 Qui segue il contenuto del file iot-invido.service
 Nota il Type=idle che è meglio di simple in quanto così 
 viene fatto partire quando anche la wlan ha ottenuto l'IP intranet
 per consentire l'accesso.
 
+```
 -------------------------------- file content
 [Install]
 WantedBy=multi-user.target
@@ -105,9 +118,13 @@ StandardError=syslog
 
 ------------------------------------------- end file content
 
-go mod init github.com/aaaasmile/iot-invido
+```
 
-== Database
+### Golang Module init
+
+    go mod init github.com/aaaasmile/iot-invido
+
+## Database
 Data la natura del progetto un db ineteressante da installare è influxdb.
 Per windows ho installato la versione 1.8.1, per unbuntu c'è già la versione 2.0.2
 Per pi4 c'è la versione 1..8.1 che si scarica da https://portal.influxdata.com/downloads/
@@ -117,20 +134,22 @@ Lì c'è il daemon e la linea di comando.
 Per vedere quali config vanno cambiati, vedi il link per windows: https://devconnected.com/how-to-install-influxdb-on-windows-in-2019/
 La doc si trova su: https://docs.influxdata.com/influxdb/v1.8/introduction/install/
 Ho creato a linea di comando con influx.exe un database:
-create database iotair
+
+    create database iotair
 Dove voglio mettere dentro tutte le misure del mio sensore.
 
-=== Tags
+## Tags
 I tags in influxdb servono per filtrare dei dati e per avere dei punti per aggregare i dati.
 Il nome del sensore o il uogo dove si trova possono avere un senso (la temperatura in un dato luogo).
 All'inizio ho usato airiaq class, che è una compressione del valore iaq, vale a dire un cluster.
-Il cluster però non si rapporta con altre misure, tipo temperatura con classe "Moderate" e per
+Il cluster per non si rapporta con altre misure, tipo temperatura con classe "Moderate" e per
 me non ha molto senso.  
 
-== TLS Server
+## TLS Server
 Per lo sviluppo locale mi serve un server tls. Nel deployment uso nginx.
 keys and certificate:
-openssl genrsa -out server.key 2048
-openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
-srv.ListenAndServeTLS("keys/server.crt", "keys/server.key")
+
+    openssl genrsa -out server.key 2048
+    openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
+    srv.ListenAndServeTLS("keys/server.crt", "keys/server.key")
 
