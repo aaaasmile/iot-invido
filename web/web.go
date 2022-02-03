@@ -36,7 +36,7 @@ func RunService(configfile string) error {
 	log.Println("Try this url: ", finalServURL)
 
 	http.Handle(conf.Current.RootURLPattern+"static/", http.StripPrefix(conf.Current.RootURLPattern+"static", http.FileServer(http.Dir("static"))))
-	http.HandleFunc(conf.Current.RootURLPattern, iot.APiHandler)
+	http.HandleFunc(conf.Current.RootURLPattern, iot.HandleIndex)
 	http.HandleFunc("/websocket", iot.WsHandler)
 
 	//tlsCfg := tls.Config{}

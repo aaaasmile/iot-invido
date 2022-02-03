@@ -1,8 +1,11 @@
 package idl
 
+import "golang.org/x/text/message"
+
 var (
 	Appname = "iot-invido"
-	Buildnr = "00.02.02.20201203-00"
+	Buildnr = "00.03.01.20220203-00"
+	Printer *message.Printer
 )
 
 type Influx struct {

@@ -31,4 +31,13 @@ export default {
 			handleError(error, that)
 		});
 	},
+	CheckCredential(that, req){
+		console.log('Request is ', req)
+		that.$http.post("CheckCredential", JSON.stringify(req), { headers: { "content-type": "application/json" } }).then(result => {
+			console.log('Call result ', result.data)
+			that.loading = false
+		}, error => {
+			handleError(error, that)
+		});
+	},
 }

@@ -1,6 +1,8 @@
 import Navbar from './components/Navbar.js'
 import store from './store/index.js'
 import routes from './routes.js'
+import API from './apicaller.js'
+
 
 
 export const app = new Vue({
@@ -32,6 +34,8 @@ export const app = new Vue({
 		this.connection = new WebSocket(socketUrl)
 		console.log("WS socket created")
 
+		this.check_credential()
+
 		this.connection.onmessage = (event) => {
 			console.log(event)
 			let dataMsg = JSON.parse(event.data)
@@ -55,7 +59,12 @@ export const app = new Vue({
 		}
 	},
 	methods: {
-
+		check_credential(){
+			console.log('Check credential')
+      const tk = localStorage.getItem('tkcred')
+			const req = {token: tk}
+			API.CheckCredential(this, req)
+		},
 	},
 	template: `
   <v-app class="grey lighten-4">
@@ -69,7 +78,8 @@ export const app = new Vue({
         <span>Buildnr: {{Buildnr}}</span>
       </div>
     </v-footer>
-  </v-app>`
+  </v-app>
+`
 })
 
 console.log('Main is here!')
