@@ -39,7 +39,7 @@ func WsHandlerShutdown() {
 	wsClients.EndWS()
 }
 
-func init() {
+func InitWS() {
 	wsClients = ws.NewWsClients()
 	wsClients.StartWS()
 }

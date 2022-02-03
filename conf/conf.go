@@ -2,6 +2,7 @@ package conf
 
 import (
 	"encoding/json"
+	"io/ioutil"
 	"log"
 	"os"
 
@@ -25,6 +26,12 @@ type SensorConfig struct {
 	ID   string
 }
 
+type TokenFile struct {
+	Token string
+	Name  string
+	ID    string
+}
+
 var Current = &Config{}
 
 func ReadConfig(configfile string) *Config {
@@ -46,6 +53,26 @@ func ReadConfig(configfile string) *Config {
 	return Current
 }
 
+func CreateEmptyTokenFile() error {
+	fname := "token.json"
+	cred := TokenFile{
+		ID:    "enter your ID for influxdb",
+		Token: "enter your Token for influxdb",
+		Name:  "enter your Name for influxdb",
+	}
+
+	raw, err := json.Marshal(cred)
+	if err != nil {
+		return err
+	}
+	err = ioutil.WriteFile(fname, raw, 0664)
+	if err != nil {
+		return err
+	}
+	log.Println("Toke file created: ", fname)
+	return nil
+}
+
 func readTokenFile(fname string, sensCfg *SensorConfig) (string, error) {
 
 	f, err := os.Open(fname)
@@ -53,11 +80,7 @@ func readTokenFile(fname string, sensCfg *SensorConfig) (string, error) {
 		return "", err
 	}
 	defer f.Close()
-	cred := struct {
-		Token string
-		Name  string
-		ID    string
-	}{}
+	cred := TokenFile{}
 
 	err = json.NewDecoder(f).Decode(&cred)
 	if err != nil {

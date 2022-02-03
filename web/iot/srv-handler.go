@@ -120,10 +120,9 @@ func listenStatus(statusCh chan *sensor.SensorState) {
 func InitFromConfig(debug bool) error {
 	// todo open the database
 	log.Println("Handler initialized", debug)
-	return nil
-}
-
-func init() {
+	InitWS()
 	statusCh := make(chan *sensor.SensorState)
 	go listenStatus(statusCh)
+
+	return nil
 }

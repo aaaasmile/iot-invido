@@ -153,3 +153,7 @@ keys and certificate:
     openssl req -new -x509 -sha256 -key server.key -out server.crt -days 3650
     srv.ListenAndServeTLS("keys/server.crt", "keys/server.key")
 
+## token.json
+Per creare un template per  token.json si susa il comando:
+
+    go run .\main.go  -createtkfile
