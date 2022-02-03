@@ -36,7 +36,7 @@ export default {
   },
   template: `
   <v-card color="grey lighten-4" flat tile>
-    <v-toolbar flat dense>
+    <v-toolbar>
       <v-toolbar-title class="subheading grey--text"
         >Dashboard Sensor</v-toolbar-title
       >
