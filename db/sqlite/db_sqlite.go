@@ -154,6 +154,27 @@ func (ld *LiteDB) InsertUser(tx *sql.Tx, ui *UserInfo) error {
 	return nil
 }
 
+func (ld *LiteDB) CheckUsernamePassword(username, password string) (bool, error) {
+	if err := validateUsernamePassw(username, password); err != nil {
+		return false, err
+	}
+
+	list, err := ld.FetchUser(string(username))
+	if err != nil {
+		return false, err
+	}
+	if len(list) != 1 {
+		return false, err
+	}
+	ui := list[0]
+	byteHash := []byte(ui.Password)
+	if err := bcrypt.CompareHashAndPassword(byteHash, []byte(password)); err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 func CreateNewUser(configfile string) error {
 	cfg := conf.Config{}
 	_, err := os.Stat(configfile)
@@ -198,21 +219,35 @@ func CreateNewUser(configfile string) error {
 	if err != nil {
 		return err
 	}
-	trx, err := lite.GetNewTransaction()
-	if err != nil {
-		return err
-	}
+
 	userInfo := UserInfo{
 		Username:  string(username),
 		Password:  string(hash),
 		Timestamp: time.Now(),
 	}
+	err = validateUsernamePassw(userInfo.Username, string(pwd2))
+	if err != nil {
+		return err
+	}
+
+	trx, err := lite.GetNewTransaction()
+	if err != nil {
+		return err
+	}
+
 	err = lite.InsertUser(trx, &userInfo)
 	if err != nil {
 		return err
 	}
 
 	return trx.Commit()
+}
+
+func validateUsernamePassw(username, password string) error {
+	if len(username) < 3 || len(password) < 8 {
+		return fmt.Errorf("wrong user or password")
+	}
+	return nil
 }
 
 func getPrompt(prompt string) ([]byte, error) {

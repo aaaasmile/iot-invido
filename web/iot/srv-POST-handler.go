@@ -6,10 +6,13 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/aaaasmile/iot-invido/conf"
 	"github.com/aaaasmile/iot-invido/util"
 	"github.com/aaaasmile/iot-invido/web/iot/datahandler"
+	"github.com/golang-jwt/jwt"
+	"github.com/google/uuid"
 )
 
 func handlePost(w http.ResponseWriter, req *http.Request) error {
@@ -83,16 +86,47 @@ func handleSignIn(w http.ResponseWriter, req *http.Request) error {
 		return err
 	}
 
-	if len(paraDef.Username) < 3 || len(paraDef.Password) < 8 {
-		return fmt.Errorf("wrong user or password")
+	valid, err := liteDB.CheckUsernamePassword(paraDef.Username, paraDef.Password)
+	if err != nil {
+		log.Println("Error on password check: ", err)
+		return fmt.Errorf("User or password wrong")
 	}
+
+	scope := "apicall"
+	usergid := uuid.New().String()
+	token, err := GenerateJWT(usergid, scope)
+	if err != nil {
+		return err
+	}
+
+	sessMgr.StoreUser(usergid, paraDef.Username, scope)
 
 	rspdata := struct {
 		Valid bool
 		Token string
 	}{
-		Valid: false,
+		Valid: valid,
+		Token: token,
 	}
 
 	return util.WriteJsonResp(w, rspdata)
+}
+
+func GenerateJWT(usergid, scope string) (string, error) {
+	token := jwt.New(jwt.SigningMethodHS256)
+
+	claims := token.Claims.(jwt.MapClaims)
+
+	claims["scope"] = scope
+	claims["gid"] = usergid
+	claims["exp"] = time.Now().Add(time.Minute * 30).Unix()
+
+	tokenString, err := token.SignedString([]byte(conf.Current.Influx.Token))
+
+	if err != nil {
+		fmt.Errorf("Something Went Wrong: %s", err.Error())
+		return "", err
+	}
+
+	return tokenString, nil
 }

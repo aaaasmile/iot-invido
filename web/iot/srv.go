@@ -20,12 +20,7 @@ type PageCtx struct {
 }
 
 var (
-	sessMgr = &SessionManager{
-		cookieName:  "IotDataCookie",
-		sessionsWS:  make(map[string]*SessionCtx),
-		maxlifetime: 3600 * 24, // Max session life in seconds
-		gidPerUser:  make(map[string]GidInSession),
-	}
+	sessMgr = NewSessionManager()
 	funcMap = template.FuncMap{
 		"trans": TranslateString,
 	}

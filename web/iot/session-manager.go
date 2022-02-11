@@ -20,6 +20,7 @@ type SessionCtx struct {
 type GidInSession struct {
 	Gid   string
 	Scope string
+	User  string
 }
 
 type SessionManager struct {
@@ -27,7 +28,18 @@ type SessionManager struct {
 	lock        sync.Mutex
 	sessionsWS  map[string]*SessionCtx
 	gidPerUser  map[string]GidInSession
+	userPerGid  map[string]GidInSession
 	maxlifetime int64
+}
+
+func NewSessionManager() *SessionManager {
+	return &SessionManager{
+		cookieName:  "IotDataCookie",
+		sessionsWS:  make(map[string]*SessionCtx),
+		maxlifetime: 3600 * 24, // Max session life in seconds
+		gidPerUser:  make(map[string]GidInSession),
+		userPerGid:  make(map[string]GidInSession),
+	}
 }
 
 func (manager *SessionManager) sessionId() string {
@@ -44,7 +56,13 @@ func (mg *SessionManager) StoreGid(user, gid, scope string) {
 	mg.gidPerUser[user] = GidInSession{Gid: gid, Scope: scope}
 }
 
-func (mg *SessionManager) GetGid(user string) (string, bool) {
+func (mg *SessionManager) StoreUser(gid, user, scope string) {
+	mg.lock.Lock()
+	defer mg.lock.Unlock()
+	mg.userPerGid[gid] = GidInSession{User: user, Scope: scope}
+}
+
+func (mg *SessionManager) GetGidFromUser(user string) (string, bool) {
 	mg.lock.Lock()
 	defer mg.lock.Unlock()
 	if v, ok := mg.gidPerUser[user]; ok {
@@ -53,7 +71,16 @@ func (mg *SessionManager) GetGid(user string) (string, bool) {
 	return "", false
 }
 
-func (mg *SessionManager) GetJwtScope(user string) (string, bool) {
+func (mg *SessionManager) GetUserScopeFromGid(gid string) (string, string, bool) {
+	mg.lock.Lock()
+	defer mg.lock.Unlock()
+	if v, ok := mg.userPerGid[gid]; ok {
+		return v.User, v.Scope, true
+	}
+	return "", "", false
+}
+
+func (mg *SessionManager) GetScope(user string) (string, bool) {
 	mg.lock.Lock()
 	defer mg.lock.Unlock()
 	if v, ok := mg.gidPerUser[user]; ok {

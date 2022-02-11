@@ -25,7 +25,6 @@ export default {
 		that.$http.post("InsertTestData", JSON.stringify(req), { headers: { "content-type": "application/json" } }).then(result => {
 			console.log('Call result ', result.data)
 			that.$store.commit('sensorstate', result.data.dataview)
-			//that.$store.commit('msgText',result.data.status)
 			that.loading = false
 		}, error => {
 			handleError(error, that)
@@ -48,6 +47,7 @@ export default {
 		that.$http.post("SignIn", JSON.stringify(req), { headers: { "content-type": "application/json" } }).then(result => {
 			console.log('Call result ', result.data)
 			that.loading = false
+			that.$store.commit('clearMsgText')
       if (fnOK){
         fnOK(result.data)
       }

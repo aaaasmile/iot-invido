@@ -22,6 +22,7 @@ export default {
       if (state.msgText !== '') {
         state.msgText = ''
       }
+      state.lastmsgText = ''
     }
   }
 }

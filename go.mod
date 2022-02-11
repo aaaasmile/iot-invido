@@ -4,6 +4,8 @@ go 1.13
 
 require (
 	github.com/BurntSushi/toml v0.3.1
+	github.com/golang-jwt/jwt v3.2.2+incompatible
+	github.com/google/uuid v1.3.0
 	github.com/gorilla/websocket v1.4.2
 	github.com/influxdata/influxdb-client-go/v2 v2.2.0
 	github.com/kardianos/osext v0.0.0-20190222173326-2bc1f35cddc0
