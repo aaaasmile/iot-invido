@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/aaaasmile/iot-invido/db/sqlite"
 	"github.com/aaaasmile/iot-invido/web/idl"
 	"github.com/aaaasmile/iot-invido/web/iot/sensor"
 )
@@ -28,7 +29,7 @@ var (
 	funcMap = template.FuncMap{
 		"trans": TranslateString,
 	}
-	//liteDB *db.LiteDB
+	liteDB *sqlite.LiteDB
 )
 
 func HandleIndex(w http.ResponseWriter, req *http.Request) {
@@ -96,9 +97,15 @@ func listenStatus(statusCh chan *sensor.SensorState) {
 	}
 }
 
-func InitFromConfig(debug bool) error {
-	// todo open the database
-	log.Println("Handler initialized", debug)
+func InitFromConfig(debug bool, dbsqlitePath string) error {
+	log.Println("InitFromConfig. Path, Debug: ", dbsqlitePath, debug)
+	liteDB = &sqlite.LiteDB{
+		DebugSQL:     debug,
+		SqliteDBPath: dbsqlitePath,
+	}
+	if err := liteDB.OpenSqliteDatabase(); err != nil {
+		return err
+	}
 	InitSession()
 	InitWS()
 	statusCh := make(chan *sensor.SensorState)

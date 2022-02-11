@@ -19,6 +19,11 @@ type Config struct {
 	UseTLS         bool
 	Influx         *idl.Influx
 	SensorCfg      SensorConfig
+	SQLite         SQLite
+}
+
+type SQLite struct {
+	DBPath string
 }
 
 type SensorConfig struct {

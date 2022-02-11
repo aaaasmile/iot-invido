@@ -19,7 +19,7 @@ func RunService(configfile string) error {
 
 	conf.ReadConfig(configfile)
 	log.Println("Configuration is read")
-	if err := iot.InitFromConfig(conf.Current.DebugVerbose); err != nil {
+	if err := iot.InitFromConfig(conf.Current.DebugVerbose, conf.Current.SQLite.DBPath); err != nil {
 		return err
 	}
 

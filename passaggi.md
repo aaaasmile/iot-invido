@@ -62,17 +62,19 @@ Vedi il back dei file su D:\Hetzner\Backups\20201126\nginx
 
 ## Problemi con Vue,js
 Di solito uso come RootURLPattern nella configurazione qualcosa come /iot/
-Il problema ? che nel caricare vue dietro al reverse proxy non posso usare direttamente
+Il problema è che nel caricare vue dietro il reverse proxy non posso usare direttamente
 il link https://iot.invido.it/#/
 Quindi uso sul target RootURLPattern= "/" mentre nella configurazione nginx
 proxy_pass http://127.0.0.1:5589/;
 
 
 ## Service Config
-Questo il conetnuto del file che compare con:
-sudo nano /lib/systemd/system/iot-invido.service
+Il config del service si edita con:
+
+    sudo nano /lib/systemd/system/iot-invido.service
 Poi si fa l`enable:
-sudo systemctl enable iot-invido.service
+
+    sudo systemctl enable iot-invido.service
 E infine lo start:
 
     sudo systemctl start iot-invido
@@ -124,7 +126,7 @@ StandardError=syslog
 
     go mod init github.com/aaaasmile/iot-invido
 
-## Database
+## Database per i sensori
 Data la natura del progetto un db ineteressante da installare è influxdb.
 Per windows ho installato la versione 1.8.1, per unbuntu c'è già la versione 2.0.2
 Per pi4 c'è la versione 1..8.1 che si scarica da https://portal.influxdata.com/downloads/
@@ -140,7 +142,7 @@ Dove voglio mettere dentro tutte le misure del mio sensore.
 
 ## Tags
 I tags in influxdb servono per filtrare dei dati e per avere dei punti per aggregare i dati.
-Il nome del sensore o il uogo dove si trova possono avere un senso (la temperatura in un dato luogo).
+Il nome del sensore o il luogo dove si trova possono avere un senso (la temperatura in un dato luogo).
 All'inizio ho usato airiaq class, che è una compressione del valore iaq, vale a dire un cluster.
 Il cluster per non si rapporta con altre misure, tipo temperatura con classe "Moderate" e per
 me non ha molto senso.  
@@ -157,3 +159,10 @@ keys and certificate:
 Per creare un template per  token.json si susa il comando:
 
     go run .\main.go  -createtkfile
+A cosa serve il token.json? Server per validare i dati inviati da un sensore.
+Normalmente un dispositio IOT collegato a internet, tipo ESP32 con un sensore di temperatura,
+manda dati a intervalli regolari sul service iot.invido.it. Per evitare che altre sorgenti
+possano mandare dati in modo non autorizzato, il device IOT deve essere riconosciuto. Per questo
+esso manda nell'header della https Request il campo DeviceToken che deve combaciare con il campo ID del file json.
+Al momento viene supportato solo un device e il file token.json è solo una soluzione veloce.
+Il campo Token di questo file serve per pubblicare dati nel database influxdb.

@@ -11,4 +11,7 @@ BucketName = "iotair"
 DbHost = "http://localhost:8086"
 Org = "invido"
 
+[SQLite]
+DBPath = "~/app/db/prod-iotinvido.db"
+
 

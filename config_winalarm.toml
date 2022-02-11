@@ -15,3 +15,6 @@ UseTLS = false
 BucketName = "iotair"
 DbHost = "http://localhost:8086"
 Org = "invido"
+
+[SQLite]
+DBPath = "../Db/test-iotinvido.db"
