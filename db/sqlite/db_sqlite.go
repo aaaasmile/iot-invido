@@ -1,13 +1,20 @@
 package sqlite
 
 import (
+	"bytes"
 	"database/sql"
 	"fmt"
 	"log"
+	"os"
+	"syscall"
 	"time"
 
+	"github.com/BurntSushi/toml"
+	"github.com/aaaasmile/iot-invido/conf"
 	"github.com/aaaasmile/iot-invido/util"
 	_ "github.com/mattn/go-sqlite3"
+	"golang.org/x/crypto/bcrypt"
+	"golang.org/x/term"
 )
 
 type LiteDB struct {
@@ -124,8 +131,8 @@ func (ld *LiteDB) FetchUser(username string) ([]*UserInfo, error) {
 }
 
 func (ld *LiteDB) InsertUser(tx *sql.Tx, ui *UserInfo) error {
-	if ui.Username == "" || ui.Password == "" || ui.Salt == "" {
-		return fmt.Errorf("at least one of username, password or salt is empty")
+	if ui.Username == "" || ui.Password == "" {
+		return fmt.Errorf("username or password is empty")
 	}
 	q := `INSERT INTO User(Username,Password,Salt,Active,Timestamp) VALUES (?,?,?,?,?);`
 	if ld.DebugSQL {
@@ -137,7 +144,7 @@ func (ld *LiteDB) InsertUser(tx *sql.Tx, ui *UserInfo) error {
 		return err
 	}
 
-	_, err = tx.Stmt(insertMore).Exec(ui.Username, ui.Password, ui.Salt, ui.Active, ui.Timestamp)
+	_, err = tx.Stmt(insertMore).Exec(ui.Username, ui.Password, ui.Salt, ui.Active, time.Now().Unix())
 	if err != nil {
 		return err
 	}
@@ -145,4 +152,80 @@ func (ld *LiteDB) InsertUser(tx *sql.Tx, ui *UserInfo) error {
 		log.Println("User added OK: ", ui)
 	}
 	return nil
+}
+
+func CreateNewUser(configfile string) error {
+	cfg := conf.Config{}
+	_, err := os.Stat(configfile)
+	if err != nil {
+		return err
+	}
+	if _, err := toml.DecodeFile(configfile, &cfg); err != nil {
+		return err
+	}
+	lite := LiteDB{
+		SqliteDBPath: cfg.SQLite.DBPath,
+	}
+	if err := lite.OpenSqliteDatabase(); err != nil {
+		return err
+	}
+
+	username, err := getPrompt("Enter username")
+	if err != nil {
+		return err
+	}
+	list, err := lite.FetchUser(string(username))
+	if err != nil {
+		return err
+	}
+	if len(list) > 0 {
+		return fmt.Errorf("User %s alread in the database", string(username))
+	}
+
+	pwd, err := getPasw("Enter a password")
+	if err != nil {
+		return err
+	}
+	pwd2, err := getPasw("Retype the password")
+	if err != nil {
+		return err
+	}
+	if bytes.Compare(pwd, pwd2) != 0 {
+		return fmt.Errorf("Password retype is not equal")
+	}
+
+	hash, err := bcrypt.GenerateFromPassword(pwd, bcrypt.MinCost)
+	if err != nil {
+		return err
+	}
+	trx, err := lite.GetNewTransaction()
+	if err != nil {
+		return err
+	}
+	userInfo := UserInfo{
+		Username:  string(username),
+		Password:  string(hash),
+		Timestamp: time.Now(),
+	}
+	err = lite.InsertUser(trx, &userInfo)
+	if err != nil {
+		return err
+	}
+
+	return trx.Commit()
+}
+
+func getPrompt(prompt string) ([]byte, error) {
+	fmt.Println(prompt + ": ")
+	var pwd string
+	_, err := fmt.Scan(&pwd)
+	if err != nil {
+		return nil, err
+	}
+	return []byte(pwd), nil
+}
+
+func getPasw(prompt string) ([]byte, error) {
+	fmt.Println(prompt)
+	return term.ReadPassword(int(syscall.Stdin))
 }
