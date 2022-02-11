@@ -30,27 +30,32 @@ export default {
 			handleError(error, that)
 		});
 	},
-	CheckAPIToken(that, req, fnOK){
-		console.log('Request is ', req)
-		that.$http.post("CheckAPIToken", JSON.stringify(req), { headers: { "content-type": "application/json" } }).then(result => {
+	CheckAPIToken(that, token, fnOK) {
+		console.log('Request with token ', token[0])
+		that.$http.post("CheckAPIToken", JSON.stringify({}), {
+			headers: {
+				"content-type": "application/json",
+				"x-api-sessiontoken": token
+			}
+		}).then(result => {
 			console.log('Call result ', result.data)
 			that.loading = false
-      if (fnOK){
-        fnOK(result.data)
-      }
+			if (fnOK) {
+				fnOK(result.data)
+			}
 		}, error => {
 			handleError(error, that)
 		});
 	},
-  SignIn(that, req, fnOK){
-		console.log('Request is ', req)
+	SignIn(that, req, fnOK) {
+		console.log('Request is ', req.username)
 		that.$http.post("SignIn", JSON.stringify(req), { headers: { "content-type": "application/json" } }).then(result => {
 			console.log('Call result ', result.data)
 			that.loading = false
 			that.$store.commit('clearMsgText')
-      if (fnOK){
-        fnOK(result.data)
-      }
+			if (fnOK) {
+				fnOK(result.data)
+			}
 		}, error => {
 			handleError(error, that)
 		});

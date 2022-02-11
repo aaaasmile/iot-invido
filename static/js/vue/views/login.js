@@ -30,7 +30,17 @@ export default {
       console.log('signIn ')
       let req = { username: this.Username, password: this.password }
       API.SignIn(this, req, (res) => {
-        console.log('Sign In result is ', res)
+        console.log('Sign In result is ', res.Valid)
+        if (res.Valid){
+          this.$store.commit('setUserToken', res.Token)
+          let path = '/'
+          if (this.$route.path !== path){
+            this.$router.replace(path)
+          } 
+        }else{
+          this.$store.commit('msgText','Auth token is invalid')
+          this.password = ''
+        }
       })
     },
 

@@ -59,20 +59,38 @@ export const app = new Vue({
 		}
 	},
 	methods: {
-		check_credential(){
+		check_credential() {
 			console.log('Check credential')
-      const tk = localStorage.getItem('tkcred')
-			const req = {token: tk}
-			API.CheckAPIToken(this, req, (res) => {
-        console.log('token validity  check: ', res.Valid)
-        if (!res.Valid){
-          let path = '/login'
-          if (this.$route.path !== path){
-            this.$router.replace(path)
-          } 
-        }
-      })
+			if (this.$store.state.user.tokenchecked) {
+				console.log('Token is checked')
+				return
+			}
+			let tk = this.$store.state.user.token
+			if (!tk) {
+				console.log('Token is empty in store')
+				const tks = localStorage.getItem('tkcred')
+				if (!tks) {
+					this.token_is_invalid()
+					return
+				}
+				console.log('Use token from store')
+				tk = tks
+			}
+			API.CheckAPIToken(this, tk, (res) => {
+				console.log('token validity  check: ', res.Valid)
+				if (res.Valid) {
+					this.$store.state.user.tokenchecked = true
+				} else {
+					this.token_is_invalid()
+				}
+			})
 		},
+		token_is_invalid() {
+			let path = '/login'
+			if (this.$route.path !== path) {
+				this.$router.replace(path)
+			}
+		}
 	},
 	template: `
   <v-app class="grey lighten-4">

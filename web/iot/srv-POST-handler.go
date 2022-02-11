@@ -49,14 +49,14 @@ func handlePost(w http.ResponseWriter, req *http.Request) error {
 
 func handleCheckAPIToken(w http.ResponseWriter, req *http.Request) error {
 	log.Println("Check API Token")
-	isvalid, err := validateAPIHeader(req)
+	valid, err := validateAPIHeader(req)
 	if err != nil {
 		return err
 	}
 	rspdata := struct {
 		Valid bool
 	}{
-		Valid: isvalid,
+		Valid: valid,
 	}
 
 	return util.WriteJsonResp(w, rspdata)
@@ -65,10 +65,25 @@ func handleCheckAPIToken(w http.ResponseWriter, req *http.Request) error {
 func validateAPIHeader(req *http.Request) (bool, error) {
 	tk := req.Header.Get("x-api-sessiontoken")
 	if tk == "" {
+		log.Println("Header x-api-sessiontoken is empty")
 		return false, nil
 	}
-	// TODO
-	return false, nil
+	token, err := jwt.Parse(tk, func(token *jwt.Token) (interface{}, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("There was an error in HMAC")
+		}
+		return []byte(conf.Current.Influx.Token), nil
+	})
+
+	if err != nil {
+		return false, err
+	}
+	if token.Valid {
+		cl := token.Claims
+		fmt.Println("** Claims is ", cl)
+	}
+
+	return true, nil
 }
 
 func handleSignIn(w http.ResponseWriter, req *http.Request) error {
